@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Colour inversion of every screen on Ctrl+Alt+I (`omarchy-magnifier invert`), generated into the same screen shader as frozen zoom so the two never fight over Hyprland's single shader slot. Off after a reboot.
+
 - Zoom in and out with `Ctrl + Alt + scroll`, in steps of `step`, clamped to `min_zoom..max_zoom`.
 - Preset and off keys: `Ctrl + Alt + Z` zooms to `preset_zoom` (300% by default), `Ctrl + Alt + X` zooms to `off_zoom`.
 - Continuous zoom with `Super + pinch` on the touchpad, clamped to the same limits.

@@ -44,6 +44,7 @@ omarchy_magnifier = {
   -- preset_zoom = 3,   -- CTRL + ALT + Z jumps here (3 = 300%)
   -- step = 1,          -- change per CTRL + ALT + scroll notch
   -- side_buttons = false,
+  -- invert = true,       -- CTRL + ALT + I inverts the colours
   -- osd_style = { background = "#000000", text = "#ffffff", border = "#ffff00" },
 }
 dofile($(loader_path))

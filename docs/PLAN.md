@@ -131,7 +131,7 @@ Done: snapshot committed and pushed to `omarchy-config` (tag `pre-magnifier-plug
 
 Verified live: no config errors, 9 bindings, popup answers ping and renders beside the pointer (high-contrast override and theme colours), zoom set/in/out/clamp/toggle through the CLI, zoom 3 survives `hyprctl reload`, lock toggle on one monitor reports and notifies correctly, no QML errors in the journal. Verified by hand on 2026-10-10 (checklist 1.1 to 1.6): scroll-wheel steps and both clamps, Ctrl+Alt+Z to the preset and Ctrl+Alt+X off (a first report that they did nothing predated the second install run; a Hyprland-side key logger was armed and then removed once they worked). Still to test by hand: side buttons, Super+K listing, popup edge behaviour, theme switch and shell restart persistence (checklist 1.7 to 3.3); on the laptop: pinch; with two monitors: jump, frozen zoom, mouse lock, hotplug re-lock, desktops interplay (sections 5, 6, 8.5).
 
-Open while the plugin is installed: colour invert (Ctrl+Alt+I) is off because it shares the screen-shader slot.
+Colour inversion was then folded into the plugin (2026-10-11): `screenfx.lua` generates invert and frozen zoom into the one shader, `invert = true` and `keys.invert` settings, `omarchy-magnifier invert`, tests and docs. Verified live: Ctrl+Alt+I bound, CLI on/off, correct shader, slot cleared when off. The personal `invert.lua` stays unloaded.
 
 ## 8. Live test plan (reference)
 
