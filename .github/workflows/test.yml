@@ -1,0 +1,24 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Lua
+        run: sudo apt-get update && sudo apt-get install -y lua5.4 jq
+      - name: Lua syntax
+        run: for f in hypr/*.lua; do luac5.4 -p "$f"; done
+      - name: Shell syntax
+        run: bash -n install.sh && bash -n bin/omarchy-magnifier
+      - name: Manifest is valid JSON with the required fields
+        run: jq -e '.schemaVersion == 1 and .id == "jpdoesdev.magnifier" and (.kinds | index("panel")) and .entryPoints.panel == "ZoomOsd.qml"' manifest.json
+      - name: Test suite
+        run: LUA=lua5.4 LUAC=luac5.4 tests/run

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "jpdoesdev.magnifier",
+  "name": "Magnifier",
+  "version": "1.0.0",
+  "author": "JPDoesDev",
+  "license": "MIT",
+  "description": "Low-vision screen magnifier for Omarchy: scroll and key zoom with limits, a zoom percentage popup beside the pointer, zoom that survives reloads, per-monitor jump with frozen zoom, and a mouse lock for multi-monitor desks.",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "ZoomOsd.qml"
+  }
+}
