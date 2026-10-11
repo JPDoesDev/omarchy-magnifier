@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# omarchy:summary=Control the Magnifier plugin (zoom, monitor jump, mouse lock)
+# omarchy:args=zoom <in|out|toggle|preset|off|set N|status> | jump <next|prev> | lock <on|off|toggle|status> | unfreeze
+# omarchy:examples=omarchy-magnifier zoom in | omarchy-magnifier zoom set 3 | omarchy-magnifier lock toggle
+
+# Thin CLI over the plugin's Lua API. Hyprland evaluates the call in its config
+# state (hyprctl eval prints only "ok"), so status is read back from Hyprland
+# and from the plugin's runtime files instead.
+
+set -euo pipefail
+
+RUNTIME="${XDG_RUNTIME_DIR:-/tmp}"
+UNLOCK_FILE="$RUNTIME/omarchy-magnifier-unlocked"
+FROZEN_FILE="$RUNTIME/omarchy-magnifier-frozen"
+
+usage() {
+  cat <<USAGE
+Usage: omarchy-magnifier <command>
+
+  zoom in | out            step the zoom by the configured step
+  zoom toggle              switch between the off level and the preset
+  zoom preset | off        go straight to the preset or the off level
+  zoom set <factor>        set a zoom factor (1 = off, 3 = 300%)
+  zoom status              print the current zoom factor
+  jump next | prev         move pointer and focus to the next / previous monitor
+  lock on | off | toggle   keep the pointer on one monitor (two or more monitors)
+  lock status              print locked / unlocked
+  unfreeze                 drop every frozen (kept magnified) monitor view
+  status                   zoom, lock state and frozen monitors in one go
+USAGE
+}
+
+die() {
+  echo "omarchy-magnifier: $*" >&2
+  exit 1
+}
+
+eval_lua() {
+  local result
+  result=$(hyprctl eval "$1" 2>&1) || die "Hyprland rejected the call: $result"
+  if [[ $result != ok* ]]; then
+    die "$result"
+  fi
+}
+
+zoom_factor() {
+  hyprctl -j getoption cursor:zoom_factor | jq -r '.float'
+}
+
+lock_status() {
+  if [[ -f $UNLOCK_FILE ]]; then
+    echo "unlocked"
+  else
+    echo "locked"
+  fi
+}
+
+print_status() {
+  local factor
+  factor=$(zoom_factor)
+  printf 'zoom: %s (%d%%)\n' "$factor" "$(awk -v f="$factor" 'BEGIN { printf "%d", f * 100 + 0.5 }')"
+  printf 'mouse lock: %s\n' "$(lock_status)"
+  if [[ -s $FROZEN_FILE ]]; then
+    printf 'frozen monitors (output id, zoom): '
+    awk '{ printf "%s@%s ", $1, $2 }' "$FROZEN_FILE"
+    echo
+  else
+    echo "frozen monitors: none"
+  fi
+}
+
+(($#)) || { usage; exit 1; }
+
+case $1 in
+  zoom)
+    case ${2:-} in
+      in) eval_lua 'OmarchyMagnifier.zoom_in()' ;;
+      out) eval_lua 'OmarchyMagnifier.zoom_out()' ;;
+      toggle) eval_lua 'OmarchyMagnifier.zoom_toggle()' ;;
+      preset) eval_lua 'OmarchyMagnifier.zoom_preset()' ;;
+      off) eval_lua 'OmarchyMagnifier.zoom_off()' ;;
+      set)
+        [[ ${3:-} =~ ^[0-9]+([.][0-9]+)?$ ]] || die "zoom set needs a number, e.g. 3 or 2.5"
+        eval_lua "OmarchyMagnifier.zoom_set($3)"
+        ;;
+      status) zoom_factor ;;
+      *) usage; exit 1 ;;
+    esac
+    ;;
+  jump)
+    case ${2:-} in
+      next) eval_lua 'OmarchyMagnifier.jump_next()' ;;
+      prev) eval_lua 'OmarchyMagnifier.jump_prev()' ;;
+      *) usage; exit 1 ;;
+    esac
+    ;;
+  lock)
+    case ${2:-toggle} in
+      on | off | toggle) eval_lua "OmarchyMagnifier.lock(\"$2\")" ;;
+      status) lock_status ;;
+      *) usage; exit 1 ;;
+    esac
+    ;;
+  unfreeze) eval_lua 'OmarchyMagnifier.unfreeze_all()' ;;
+  status) print_status ;;
+  -h | --help | help) usage ;;
+  *) usage; exit 1 ;;
+esac

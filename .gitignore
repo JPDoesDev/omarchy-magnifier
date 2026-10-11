@@ -1,0 +1,5 @@
+# Scratch and editor files
+*.swp
+*~
+.DS_Store
+node_modules/

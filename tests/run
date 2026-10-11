@@ -1,0 +1,42 @@
+#!/bin/bash
+# Run every tests/*-test.sh, keep going past failures, summarise, and exit
+# non-zero when any test failed. osd-model-test.sh (node) is skipped when it
+# is absent or node is not installed.
+
+cd "$(dirname -- "${BASH_SOURCE[0]}")/.." || exit 1
+
+shopt -s nullglob
+tests=(tests/*-test.sh)
+
+passed=0
+skipped=0
+failed=()
+
+[[ -f tests/osd-model-test.sh ]] || {
+  echo "# tests/osd-model-test.sh: skipped (not present)"
+  skipped=$((skipped + 1))
+}
+
+for test in "${tests[@]}"; do
+  name=$(basename -- "$test")
+  if [[ $name == osd-model-test.sh ]] && ! command -v node >/dev/null; then
+    echo "# $test: skipped (node not installed)"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  echo "# $test"
+  if bash "$test"; then
+    passed=$((passed + 1))
+  else
+    failed+=("$test")
+  fi
+  echo
+done
+
+echo "# ${#tests[@]} test files: $passed passed, ${#failed[@]} failed, $skipped skipped"
+for test in "${failed[@]}"; do
+  echo "# FAILED: $test"
+done
+
+(( ${#failed[@]} == 0 ))
