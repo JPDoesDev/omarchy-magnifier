@@ -90,8 +90,8 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 8.1 | Ctrl + Alt + I | every screen inverted at once; OSD says "Colours inverted" | [ ] |
-| 8.2 | Ctrl + Alt + I again | back to normal; OSD says "Colours normal" | [ ] |
+| 8.1 | Ctrl + Alt + I | every screen inverted at once; OSD says "Colours inverted" | [x] |
+| 8.2 | Ctrl + Alt + I again | back to normal; OSD says "Colours normal" | [x] |
 | 8.3 | Invert, then `hyprctl reload` | still inverted | [ ] |
 | 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [ ] |
 | 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [ ] two monitors |
