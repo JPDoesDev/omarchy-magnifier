@@ -12,11 +12,11 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | 1.4 | Keep scrolling down past 100% | stays at 100%, never below | [x] |
 | 1.5 | Ctrl + Alt + Z | jumps straight to 600% | [x] |
 | 1.6 | Ctrl + Alt + X | back to 100% | [x] |
-| 1.7 | Super + front side button (mouse:276) | 600% | [ ] |
-| 1.8 | Super + back side button (mouse:275) | 100% | [ ] |
-| 1.9 | Super + Ctrl + Z (Omarchy's own key) | zoom +100% as before, and the new level is kept across a reload | [ ] |
-| 1.10 | Super + Ctrl + Alt + Z (Omarchy reset) | 100% | [ ] |
-| 1.11 | Super + K | the nine Magnifier entries are listed with descriptions | [ ] |
+| 1.7 | Super + front side button (mouse:276) | 600% | [x] |
+| 1.8 | Super + back side button (mouse:275) | 100% | [x] |
+| 1.9 | Super + Ctrl + Z (Omarchy's own key) | zoom +100% as before, and the new level is kept across a reload | [x] |
+| 1.10 | Super + Ctrl + Alt + Z (Omarchy reset) | 100% | [x] |
+| 1.11 | Super + K | the nine Magnifier entries are listed with descriptions | [x] |
 | 1.12 | `omarchy-magnifier zoom set 3`, `in`, `out`, `toggle`, `off`, `status` | each does what it says; status prints the factor | [x] |
 
 ## 2. Popup (OSD)
