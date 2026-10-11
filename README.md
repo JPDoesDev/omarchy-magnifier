@@ -12,6 +12,7 @@ A screen magnifier for low-vision users of [Omarchy](https://omarchy.org/). Zoom
 | `Ctrl + Alt + Scroll down` | Zoom out by one step |
 | `Ctrl + Alt + Z` | Zoom to the preset (300%) |
 | `Ctrl + Alt + X` | Zoom off (100%) |
+| `Ctrl + Alt + I` | Invert the colours of every screen (press again to restore) |
 | `Super + Pinch` on the touchpad | Zoom in and out continuously |
 | `Super + Ctrl + Scroll down` | Jump to the next monitor |
 | `Super + Ctrl + Scroll up` | Jump to the previous monitor |
@@ -99,6 +100,7 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `side_buttons` | `false` | Bind `Super + mouse side buttons` to preset and off. |
 | `side_button_in` | `276` | Button code of the front side button on most mice. Find yours with `wev`. |
 | `side_button_out` | `275` | Button code of the back side button. |
+| `invert` | `true` | Enable colour inversion and its key. Inversion is always off after a reboot. |
 | `jump` | `true` | `Super + Ctrl + scroll` hops between monitors with per-monitor memory. |
 | `mouse_lock` | `true` | Keep the pointer on one monitor until a jump (two or more monitors). |
 | `lock_gap` | `20000` | Logical pixels placed between monitors while locked. |
@@ -106,6 +108,7 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `keys.zoom_out` | `"CTRL + ALT + mouse_down"` | Zoom out. |
 | `keys.preset` | `"CTRL + ALT + Z"` | Zoom to `preset_zoom`. |
 | `keys.off` | `"CTRL + ALT + X"` | Zoom to `off_zoom`. |
+| `keys.invert` | `"CTRL + ALT + I"` | Toggle colour inversion. |
 | `keys.jump_next` | `"SUPER + CTRL + mouse_down"` | Jump to the next monitor. |
 | `keys.jump_prev` | `"SUPER + CTRL + mouse_up"` | Jump to the previous monitor. |
 | `keys.lock_toggle` | `"SUPER + CTRL + M"` | Mouse lock on and off. |
@@ -168,6 +171,7 @@ omarchy-magnifier zoom preset      # go to preset_zoom
 omarchy-magnifier zoom off         # go to off_zoom
 omarchy-magnifier zoom set 4       # any level inside min_zoom..max_zoom
 omarchy-magnifier zoom status      # print the current zoom factor
+omarchy-magnifier invert toggle        # or on / off / status
 omarchy-magnifier jump next        # same as Super + Ctrl + Scroll down
 omarchy-magnifier jump prev        # same as Super + Ctrl + Scroll up
 omarchy-magnifier lock on|off|toggle|status
@@ -181,7 +185,7 @@ The same functions are reachable from any Hyprland Lua file through the `Omarchy
 
 ### Known limits
 
-- **One screen shader.** Frozen zoom uses Hyprland's single screen-shader slot. When another shader is active, for example a colour-inversion plugin, freezing is skipped and that shader is left alone. You get one notification about it. Jump and mouse lock still work; the monitor you leave simply drops to 100%.
+- **One screen shader.** Frozen zoom and colour inversion share Hyprland's single screen-shader slot, generated into one shader so they work together. When a shader from somewhere else is active, for example a per-window inversion plugin, both are skipped and that shader is left alone. You get one notification about it. Jump and mouse lock still work; the monitor you leave simply drops to 100%.
 - **GPU and battery while frozen.** While any monitor is frozen Hyprland renders full frames continuously so the frozen view keeps updating. That costs GPU time and battery. It stops as soon as nothing is frozen.
 - **Reboot clears the memory.** Zoom, per-monitor memory and frozen views survive a Hyprland reload but are gone after a reboot.
 - **Scale pills un-gap the layout.** Changing a monitor's SCALE in Omarchy's display panel applies a live rule with `position = "auto"`. That removes the gap between monitors until the next sync, so the mouse can cross. Press `Super + Ctrl + M` twice to lock again right away.
@@ -204,7 +208,7 @@ Prints any error in your Hyprland config. A typo in the settings table shows up 
 hyprctl binds | grep -i magnifier
 ```
 
-Lists the plugin's bindings. Expect seven with the default settings, nine with `side_buttons = true`. Nothing listed means the `dofile(...)` line is missing from `~/.config/hypr/hyprland.lua` or the plugin folder is not where it expects.
+Lists the plugin's bindings. Expect eight with the default settings, ten with `side_buttons = true`. Nothing listed means the `dofile(...)` line is missing from `~/.config/hypr/hyprland.lua` or the plugin folder is not where it expects.
 
 ```bash
 omarchy-shell magnifier ping
@@ -247,7 +251,7 @@ Zoom is Hyprland's own `cursor:zoom_factor`. The plugin wraps it in Lua: it clam
 
 The popup is a shell plugin (`ZoomOsd.qml`, kind `panel`) inside `omarchy-shell`. Hyprland sends it the zoom and the style in one JSON payload over `omarchy-shell magnifier show`. Because the style travels with each call, the popup never reads a settings file and a reload is enough to change its look. Colours come from the active theme unless `osd_style` forces them.
 
-Hyprland renders the zoom only on the monitor under the pointer. The jump (`hypr/jump.lua`) records the pointer position and zoom of the monitor you leave, moves focus and pointer to the remembered spot on the target, and restores the target's zoom. To keep the monitor you left magnified, `hypr/screenfx.lua` generates a screen shader that re-creates the same magnified view on that output alone, through the shader's `wl_output` uniform. Frozen views are listed in `$XDG_RUNTIME_DIR/omarchy-magnifier-frozen` and the shader is written to `$XDG_RUNTIME_DIR/omarchy-magnifier.frag`.
+Hyprland renders the zoom only on the monitor under the pointer. The jump (`hypr/jump.lua`) records the pointer position and zoom of the monitor you leave, moves focus and pointer to the remembered spot on the target, and restores the target's zoom. To keep the monitor you left magnified, `hypr/screenfx.lua` generates a screen shader that re-creates the same magnified view on that output alone, through the shader's `wl_output` uniform. Colour inversion is one more line in the same generated shader, applied to every output; its on/off flag is `$XDG_RUNTIME_DIR/omarchy-magnifier-inverted`. Frozen views are listed in `$XDG_RUNTIME_DIR/omarchy-magnifier-frozen` and the shader is written to `$XDG_RUNTIME_DIR/omarchy-magnifier.frag`.
 
 Hyprland clamps pointer motion to the nearest monitor edge. The mouse lock (`hypr/lock.lua`) places the monitors far apart in the virtual layout, `lock_gap` logical pixels by default and always under Xwayland's coordinate limit, so no mouse movement can reach the other monitor. The gapped layout is written as monitor rules to `~/.local/state/omarchy/toggles/hypr/magnifier-mouse-lock.lua`, which Omarchy loads after your own `monitors.lua`. Each rule keeps the monitor's current mode, scale and rotation; only the position changes. Unlocking removes the file. The unlocked flag is `$XDG_RUNTIME_DIR/omarchy-magnifier-unlocked`.
 

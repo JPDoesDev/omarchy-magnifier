@@ -39,7 +39,7 @@ stub.eq(S:bind_keys("Magnifier zoom off"), "CTRL + ALT + X", "off bound to its d
 stub.eq(S:bind_keys("Magnifier jump to next monitor"), "SUPER + CTRL + mouse_down", "jump next bound to its default chord")
 stub.eq(S:bind_keys("Magnifier jump to previous monitor"), "SUPER + CTRL + mouse_up", "jump prev bound to its default chord")
 stub.eq(S:bind_keys("Magnifier mouse lock toggle"), "SUPER + CTRL + M", "lock toggle bound to its default chord")
-stub.eq(#S.calls.bind, 7, "seven binds by default (4 zoom, 2 jump, 1 lock)")
+stub.eq(#S.calls.bind, 8, "eight binds by default (4 zoom, 1 invert, 2 jump, 1 lock)")
 for _, b in ipairs(S.calls.bind) do
   if type(b.dispatcher) ~= "function" then stub.fail("every bind carries a Lua function dispatcher", b.keys) end
   if type(b.description) ~= "string" then stub.fail("every bind carries a description", b.keys) end
@@ -89,7 +89,7 @@ stub.eq(cfg.osd_style.font_size, 64, "numeric string font_size coerced")
 stub.eq(cfg.osd_style.padding, 15, "table padding falls back to the default")
 stub.eq(#S:binds_for("Magnifier zoom off"), 0, "keys.off = false leaves the off chord unbound")
 stub.eq(S:bind_keys("Magnifier zoom to preset"), "CTRL + ALT + Z", "preset is still bound beside a disabled key")
-stub.eq(#S.calls.bind, 6, "six binds when one key is disabled")
+stub.eq(#S.calls.bind, 7, "seven binds when one key is disabled")
 
 S = stub.new()
 cfg = S:load({ min_zoom = 5, max_zoom = 3 }).settings
@@ -160,7 +160,7 @@ _G.o = {
 S = stub.new()
 S:load(nil)
 stub.eq(#S.calls.bind, 0, "with o.bind present, hl.bind is not called directly")
-stub.eq(#via_o, 7, "with o.bind present, all seven binds go through it")
+stub.eq(#via_o, 8, "with o.bind present, all eight binds go through it")
 stub.check(type(via_o[1].dispatcher) == "function" and type(via_o[1].description) == "string",
   "o.bind receives (keys, description, function)")
 _G.o = nil
@@ -182,7 +182,7 @@ stub.check(S:bind_keys("Magnifier zoom to preset (side button)") == "SUPER + mou
   "side_buttons = true binds SUPER + mouse:276 to preset")
 stub.check(S:bind_keys("Magnifier zoom off (side button)") == "SUPER + mouse:275",
   "side_buttons = true binds SUPER + mouse:275 to off")
-stub.eq(#S.calls.bind, 9, "side buttons add exactly two binds")
+stub.eq(#S.calls.bind, 10, "side buttons add exactly two binds")
 
 S = stub.new()
 S:load({ side_buttons = true, side_button_in = "277", side_button_out = 278.0 })

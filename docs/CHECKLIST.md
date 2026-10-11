@@ -86,13 +86,26 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | 7.5 | Put garbage in the table (`step = "fast"`, `osd_style = 5`) | plugin still loads with defaults; no config error | [x] in tests |
 | 7.6 | Remove the whole block, reload | all Magnifier binds gone, Omarchy's own zoom keys still work | [ ] |
 
-## 8. Install, uninstall, coexistence
+## 8. Colour inversion
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 8.1 | `install.sh` twice | second run reports everything already present, no duplicate block | [x] |
+| 8.1 | Ctrl + Alt + I | every screen inverted at once; OSD says "Colours inverted" | [ ] |
+| 8.2 | Ctrl + Alt + I again | back to normal; OSD says "Colours normal" | [ ] |
+| 8.3 | Invert, then `hyprctl reload` | still inverted | [ ] |
+| 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [ ] |
+| 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [ ] two monitors |
+| 8.6 | `omarchy-magnifier invert status` and `status` | report inverted / normal | [x] |
+| 8.7 | Reboot | starts normal | [ ] |
+| 8.8 | Set `invert = false`, reload while inverted | colours return to normal and Ctrl + Alt + I does nothing | [x] in tests |
+
+## 9. Install, uninstall, coexistence
+
+| # | Do this | Expect | Status |
+|---|---|---|---|
+| 9.1 | `install.sh` twice | second run reports everything already present, no duplicate block | [x] |
 | 8.2 | `install.sh --uninstall` then `install.sh` | `hyprland.lua` identical to before, plugin back | [x] on a scratch config |
-| 8.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 | [x] |
-| 8.4 | Enable your invert module again while a monitor is frozen | one notification that another shader is active; invert works; frozen zoom skipped | [ ] |
-| 8.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [ ] two monitors |
-| 8.6 | `tests/run` in the checkout | 7 files pass | [x] |
+| 9.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 | [x] |
+| 9.4 | Install the community per-window invert plugin while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside | [ ] optional |
+| 9.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [ ] two monitors |
+| 9.6 | `tests/run` in the checkout | 7 files pass | [x] |

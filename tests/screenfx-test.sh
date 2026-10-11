@@ -123,4 +123,84 @@ stub.check(ok, "a frozen file with a junk line still loads", err)
 stub.contains(stub.read_file(SHADER), "if (wl_output == 0)", "valid lines in a damaged frozen file are still applied")
 stub.remove(FROZEN)
 stub.remove(SHADER)
+
+-- Colour inversion shares the shader with frozen zoom.
+local INVERT = stub.INVERT_FILE
+stub.remove(INVERT)
+S = stub.new()
+mag = S:load(nil)
+fx = mag.screenfx
+stub.eq(fx.inverted(), false, "colours start normal")
+stub.eq(S:bind_keys("Magnifier invert colours"), "CTRL + ALT + I", "invert bound to CTRL + ALT + I by default")
+stub.eq(OmarchyMagnifier.invert, fx.set_invert, "invert is exported on OmarchyMagnifier")
+S:reset_calls()
+stub.eq(fx.set_invert("toggle"), "inverted", "toggle from normal reports inverted")
+stub.check(stub.exists(INVERT), "the invert flag file is written")
+text = stub.read_file(SHADER)
+stub.contains(text, "color.rgb = 1.0 - color.rgb;", "the shader inverts the colours")
+stub.lacks(text, "uniform float time;", "inversion alone does not reference the time uniform")
+stub.lacks(text, "wl_output ==", "inversion alone has no per-output block")
+stub.eq(S:last_config("decoration.screen_shader"), SHADER, "the plugin shader is installed for inversion")
+local osd = S:execs("^omarchy osd %-m ")
+stub.eq(#osd, 1, "one OSD message on toggle")
+stub.contains(osd[1], "Colours inverted", "the OSD says the colours are inverted")
+
+-- Frozen view on top of inversion: both in one shader.
+S:reset_calls()
+stub.eq(fx.freeze(0, 3, 0.25, 0.5), true, "freezing works while inverted")
+text = stub.read_file(SHADER)
+stub.contains(text, "color.rgb = 1.0 - color.rgb;", "the combined shader still inverts")
+stub.contains(text, "if (wl_output == 0)", "the combined shader still freezes output 0")
+stub.contains(text, "uniform float time;", "the combined shader references time while a view is frozen")
+local inv_pos, frag_pos = text:find("color.rgb = 1.0 - color.rgb;", 1, true), text:find("fragColor = color;", 1, true)
+local tex_pos = text:find("texture(tex, uv)", 1, true)
+stub.check(tex_pos < inv_pos and inv_pos < frag_pos, "inversion is applied after sampling and before output")
+fx.unfreeze_all()
+text = stub.read_file(SHADER)
+stub.contains(text, "color.rgb = 1.0 - color.rgb;", "unfreezing keeps the inversion")
+stub.eq(S:last_config("decoration.screen_shader"), SHADER, "the shader stays installed for inversion alone")
+
+-- Reload keeps it; off removes it; status answers.
+S = stub.new()
+mag = S:load(nil)
+fx = mag.screenfx
+stub.eq(fx.inverted(), true, "inversion survives a reload (flag on file)")
+stub.eq(S:last_config("decoration.screen_shader"), SHADER, "inversion is re-applied at load")
+stub.eq(fx.set_invert("status"), "inverted", "status reports inverted without changing anything")
+S:reset_calls()
+stub.eq(fx.set_invert("on"), "inverted", "on while inverted is a no-op")
+stub.eq(#S.calls.config, 0, "a no-op does not touch the shader slot")
+stub.eq(#S:execs("^omarchy osd"), 0, "a no-op shows no OSD")
+stub.eq(fx.set_invert("off"), "normal", "off reports normal")
+stub.check(not stub.exists(INVERT), "off removes the flag file")
+stub.eq(S:last_config("decoration.screen_shader"), "", "off clears the shader slot when nothing is frozen")
+stub.contains(S:execs("^omarchy osd %-m ")[1], "Colours normal", "the OSD says the colours are normal")
+stub.eq(S:press("CTRL + ALT + I") and fx.inverted(), true, "the chord toggles inversion on")
+S:press("CTRL + ALT + I")
+stub.eq(fx.inverted(), false, "the chord toggles inversion off again")
+
+-- Foreign shader: inversion steps aside with one notification.
+S = stub.new()
+S.values["decoration.screen_shader"] = "/x/other.frag"
+mag = S:load(nil)
+fx = mag.screenfx
+S:reset_calls()
+stub.eq(fx.set_invert("on"), "normal", "invert is refused while a foreign shader is set")
+stub.check(not stub.exists(INVERT), "no flag is written while the slot is foreign")
+stub.eq(#S:config_values("decoration.screen_shader"), 0, "invert does not touch the foreign shader")
+stub.eq(#S:execs("^omarchy%-notification%-send "), 1, "one notification for the refused inversion")
+stub.eq(fx.freeze(0, 3, 0.25, 0.5), false, "freeze is also refused")
+stub.eq(#S:execs("^omarchy%-notification%-send "), 1, "still one notification across both effects")
+S.values["decoration.screen_shader"] = ""
+
+-- Feature switched off while the flag is set: cleaned up at load.
+stub.write_file(INVERT, "")
+S = stub.new()
+mag = S:load({ invert = false })
+stub.check(not stub.exists(INVERT), "invert = false drops a stale inversion at load")
+stub.eq(S:bind_keys("Magnifier invert colours"), nil, "invert = false binds no key")
+stub.eq(S:last_config("decoration.screen_shader"), "", "invert = false leaves the slot clear")
+stub.remove(FROZEN)
+stub.remove(SHADER)
+stub.remove(INVERT)
 LUA

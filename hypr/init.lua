@@ -35,6 +35,8 @@ local DEFAULTS = {
   side_button_in = 276, -- front button on most mice; find yours with `wev`
   side_button_out = 275,
 
+  invert = true, -- CTRL + ALT + I inverts the colours of every screen (off after a reboot)
+
   jump = true, -- SUPER + CTRL + scroll hops between monitors with per-monitor memory
   mouse_lock = true, -- keep the pointer on one monitor until a jump (2+ monitors)
   lock_gap = 20000, -- logical pixels between monitors while locked
@@ -45,6 +47,7 @@ local DEFAULTS = {
     zoom_out = "CTRL + ALT + mouse_down",
     preset = "CTRL + ALT + Z",
     off = "CTRL + ALT + X",
+    invert = "CTRL + ALT + I",
     jump_next = "SUPER + CTRL + mouse_down",
     jump_prev = "SUPER + CTRL + mouse_up",
     lock_toggle = "SUPER + CTRL + M",

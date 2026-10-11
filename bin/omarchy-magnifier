@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # omarchy:summary=Control the Magnifier plugin (zoom, monitor jump, mouse lock)
-# omarchy:args=zoom <in|out|toggle|preset|off|set N|status> | jump <next|prev> | lock <on|off|toggle|status> | unfreeze
+# omarchy:args=zoom <in|out|toggle|preset|off|set N|status> | invert <on|off|toggle|status> | jump <next|prev> | lock <on|off|toggle|status> | unfreeze
 # omarchy:examples=omarchy-magnifier zoom in | omarchy-magnifier zoom set 3 | omarchy-magnifier lock toggle
 
 # Thin CLI over the plugin's Lua API. Hyprland evaluates the call in its config
@@ -13,6 +13,7 @@ set -euo pipefail
 RUNTIME="${XDG_RUNTIME_DIR:-/tmp}"
 UNLOCK_FILE="$RUNTIME/omarchy-magnifier-unlocked"
 FROZEN_FILE="$RUNTIME/omarchy-magnifier-frozen"
+INVERT_FILE="$RUNTIME/omarchy-magnifier-inverted"
 
 usage() {
   cat <<USAGE
@@ -23,6 +24,8 @@ Usage: omarchy-magnifier <command>
   zoom preset | off        go straight to the preset or the off level
   zoom set <factor>        set a zoom factor (1 = off, 3 = 300%)
   zoom status              print the current zoom factor
+  invert on | off | toggle invert the colours of every screen
+  invert status            print inverted / normal
   jump next | prev         move pointer and focus to the next / previous monitor
   lock on | off | toggle   keep the pointer on one monitor (two or more monitors)
   lock status              print locked / unlocked
@@ -48,6 +51,14 @@ zoom_factor() {
   hyprctl -j getoption cursor:zoom_factor | jq -r '.float'
 }
 
+invert_status() {
+  if [[ -f $INVERT_FILE ]]; then
+    echo "inverted"
+  else
+    echo "normal"
+  fi
+}
+
 lock_status() {
   if [[ -f $UNLOCK_FILE ]]; then
     echo "unlocked"
@@ -60,6 +71,7 @@ print_status() {
   local factor
   factor=$(zoom_factor)
   printf 'zoom: %s (%d%%)\n' "$factor" "$(awk -v f="$factor" 'BEGIN { printf "%d", f * 100 + 0.5 }')"
+  printf 'colours: %s\n' "$(invert_status)"
   printf 'mouse lock: %s\n' "$(lock_status)"
   if [[ -s $FROZEN_FILE ]]; then
     printf 'frozen monitors (output id, zoom): '
@@ -88,6 +100,13 @@ case $1 in
       *) usage; exit 1 ;;
     esac
     ;;
+  invert)
+    case ${2:-toggle} in
+      on | off | toggle) eval_lua "OmarchyMagnifier.invert(\"${2:-toggle}\")" ;;
+      status) invert_status ;;
+      *) usage; exit 1 ;;
+    esac
+    ;;
   jump)
     case ${2:-} in
       next) eval_lua 'OmarchyMagnifier.jump_next()' ;;
@@ -97,7 +116,7 @@ case $1 in
     ;;
   lock)
     case ${2:-toggle} in
-      on | off | toggle) eval_lua "OmarchyMagnifier.lock(\"$2\")" ;;
+      on | off | toggle) eval_lua "OmarchyMagnifier.lock(\"${2:-toggle}\")" ;;
       status) lock_status ;;
       *) usage; exit 1 ;;
     esac

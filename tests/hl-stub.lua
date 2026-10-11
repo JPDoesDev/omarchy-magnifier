@@ -29,6 +29,7 @@ M.STATE_FILE = M.RUNTIME .. "/omarchy-magnifier-state"
 M.FROZEN_FILE = M.RUNTIME .. "/omarchy-magnifier-frozen"
 M.SHADER_FILE = M.RUNTIME .. "/omarchy-magnifier.frag"
 M.UNLOCK_FILE = M.RUNTIME .. "/omarchy-magnifier-unlocked"
+M.INVERT_FILE = M.RUNTIME .. "/omarchy-magnifier-inverted"
 M.FLAG_FILE = M.STATE_HOME .. "/omarchy/toggles/hypr/magnifier-mouse-lock.lua"
 
 -- ---- pass / fail protocol -------------------------------------------------
