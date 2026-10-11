@@ -104,7 +104,7 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | # | Do this | Expect | Status |
 |---|---|---|---|
 | 9.1 | `install.sh` twice | second run reports everything already present, no duplicate block | [x] |
-| 8.2 | `install.sh --uninstall` then `install.sh` | `hyprland.lua` identical to before, plugin back | [x] on a scratch config |
+| 9.2 | `install.sh --uninstall` then `install.sh` | `hyprland.lua` identical to before, plugin back | [x] on a scratch config |
 | 9.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 | [x] |
 | 9.4 | Install the community per-window invert plugin while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside | [ ] optional |
 | 9.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [ ] two monitors |
