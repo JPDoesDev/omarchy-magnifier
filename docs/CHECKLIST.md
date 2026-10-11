@@ -38,7 +38,7 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | 3.1 | Zoom to 300%, run `hyprctl reload` | still 300%, no popup | [x] |
 | 3.2 | Zoom to 300%, change theme with Super + Ctrl + Shift + Space | still 300% after the theme applies | [x] |
 | 3.3 | Zoom to 300%, run `omarchy restart shell` | still 300%; popup works again afterwards | [x] |
-| 3.4 | Reboot | starts at 100% (runtime state is cleared on purpose) | [ ] |
+| 3.4 | Reboot | starts at 100% (runtime state is cleared on purpose) | [x] |
 
 ## 4. Pinch (touchpad only, laptop)
 
@@ -96,7 +96,7 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [x] |
 | 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [ ] two monitors |
 | 8.6 | `omarchy-magnifier invert status` and `status` | report inverted / normal | [x] |
-| 8.7 | Reboot | starts normal | [ ] |
+| 8.7 | Reboot | starts normal | [x] |
 | 8.8 | Set `invert = false`, reload while inverted | colours return to normal and Ctrl + Alt + I does nothing | [x] in tests |
 
 ## 9. Install, uninstall, coexistence
