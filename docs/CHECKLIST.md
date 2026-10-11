@@ -24,10 +24,10 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | # | Do this | Expect | Status |
 |---|---|---|---|
 | 2.1 | Any zoom change | black card, white bold percentage, yellow border, to the right of the pointer, gone after 1.2 s | [x] rendered via IPC |
-| 2.2 | Zoom at 700% or more | card stays readable and small, not blown up to a quarter of the screen | [ ] |
-| 2.3 | Pointer near the right edge, then zoom | card flips to the left of the pointer | [ ] |
-| 2.4 | Pointer near the top or bottom edge, then zoom | card stays fully on screen | [ ] |
-| 2.5 | Click where the card is while it shows | click reaches the window underneath | [ ] |
+| 2.2 | Zoom at 700% or more | card stays readable and small, not blown up to a quarter of the screen | [x] |
+| 2.3 | Pointer near the right edge, then zoom | card flips to the left of the pointer | [x] |
+| 2.4 | Pointer near the top or bottom edge, then zoom | card stays fully on screen | [x] |
+| 2.5 | Click where the card is while it shows | click reaches the window underneath | [x] |
 | 2.6 | Remove the osd_style colours from the block, `hyprctl reload`, zoom | card uses the theme colours (on another theme they differ from black/white/yellow) | [x] |
 | 2.7 | `omarchy-shell magnifier ping` | `ok` | [x] |
 
@@ -36,8 +36,8 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 | # | Do this | Expect | Status |
 |---|---|---|---|
 | 3.1 | Zoom to 300%, run `hyprctl reload` | still 300%, no popup | [x] |
-| 3.2 | Zoom to 300%, change theme with Super + Ctrl + Shift + Space | still 300% after the theme applies | [ ] |
-| 3.3 | Zoom to 300%, run `omarchy restart shell` | still 300%; popup works again afterwards | [ ] |
+| 3.2 | Zoom to 300%, change theme with Super + Ctrl + Shift + Space | still 300% after the theme applies | [x] |
+| 3.3 | Zoom to 300%, run `omarchy restart shell` | still 300%; popup works again afterwards | [x] |
 | 3.4 | Reboot | starts at 100% (runtime state is cleared on purpose) | [ ] |
 
 ## 4. Pinch (touchpad only, laptop)
@@ -92,8 +92,8 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 |---|---|---|---|
 | 8.1 | Ctrl + Alt + I | every screen inverted at once; OSD says "Colours inverted" | [x] |
 | 8.2 | Ctrl + Alt + I again | back to normal; OSD says "Colours normal" | [x] |
-| 8.3 | Invert, then `hyprctl reload` | still inverted | [ ] |
-| 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [ ] |
+| 8.3 | Invert, then `hyprctl reload` | still inverted | [x] |
+| 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [x] |
 | 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [ ] two monitors |
 | 8.6 | `omarchy-magnifier invert status` and `status` | report inverted / normal | [x] |
 | 8.7 | Reboot | starts normal | [ ] |
