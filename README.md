@@ -96,7 +96,7 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `osd` | `true` | Show the zoom percentage beside the pointer on every change. |
 | `pinch` | `true` | `Super + pinch` on the touchpad zooms continuously. |
 | `pinch_fingers` | `2` | Fingers for the pinch gesture. |
-| `pinch_zoom_level` | `1.0` | Hyprland's `zoom_level` for the `cursor_zoom` gesture. |
+| `pinch_zoom_level` | `1.0` | Hyprland's `zoom_level` for the `cursor_zoom` gesture. The gesture runs in Hyprland's `live` mode, which ignores this value, so leave it at 1. |
 | `side_buttons` | `false` | Bind `Super + mouse side buttons` to preset and off. |
 | `side_button_in` | `276` | Button code of the front side button on most mice. Find yours with `wev`. |
 | `side_button_out` | `275` | Button code of the back side button. |

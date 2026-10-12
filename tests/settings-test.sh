@@ -52,6 +52,7 @@ stub.eq(g.direction, "pinch", "gesture direction is pinch")
 stub.eq(g.fingers, 2, "gesture uses two fingers by default")
 stub.eq(g.mods, "SUPER", "gesture needs SUPER")
 stub.eq(g.action, "cursor_zoom", "gesture action is cursor_zoom (the snake_case name Hyprland 0.56 ships)")
+stub.eq(g.mode, "live", "gesture mode is live (continuous zoom; the default mode is a toggle that snaps to 100%)")
 stub.eq(g.zoom_level, 1.0, "gesture zoom_level is 1.0 by default")
 stub.eq(math.type(g.fingers), "integer", "gesture fingers is an integer")
 

@@ -1,6 +1,6 @@
 # Magnifier plugin: feature verification checklist
 
-Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] not yet verified; many need a second monitor or the laptop touchpad. Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
+Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch on the laptop on 2026-10-11), [ ] not yet verified; many need a second monitor or the laptop touchpad. Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
 
 ## 1. Zoom keys and buttons (single monitor is enough)
 
@@ -44,9 +44,9 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10), [ ] n
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 4.1 | Hold Super, pinch out on the touchpad | zoom increases smoothly | [ ] laptop |
-| 4.2 | Pinch far in | settles at 100%, not below; within half a second the saved state matches | [ ] laptop |
-| 4.3 | Pinch far out | settles at 1000% | [ ] laptop |
+| 4.1 | Hold Super, pinch out on the touchpad | zoom increases smoothly | [x] |
+| 4.2 | Pinch far in | settles at 100%, not below; within half a second the saved state matches | [x] |
+| 4.3 | Pinch far out | settles at 1000% | [x] |
 
 ## 5. Monitor jump (needs two monitors)
 

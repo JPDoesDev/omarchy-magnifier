@@ -29,7 +29,7 @@ local DEFAULTS = {
 
   pinch = true, -- SUPER + pinch on the touchpad zooms continuously
   pinch_fingers = 2,
-  pinch_zoom_level = 1.0, -- Hyprland's zoom_level for the cursor_zoom gesture
+  pinch_zoom_level = 1.0, -- Hyprland's zoom_level for the cursor_zoom gesture (unused in live mode; placeholder)
 
   side_buttons = false, -- SUPER + mouse side buttons jump to preset / off
   side_button_in = 276, -- front button on most mice; find yours with `wev`
