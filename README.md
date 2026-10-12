@@ -193,7 +193,7 @@ The same functions are reachable from any Hyprland Lua file through the `Omarchy
 - **GPU and battery while frozen.** While any monitor is frozen Hyprland renders full frames continuously so the frozen view keeps updating. That costs GPU time and battery. It stops as soon as nothing is frozen.
 - **Reboot clears the memory.** Zoom, per-monitor memory and frozen views survive a Hyprland reload but are gone after a reboot.
 - **Scale pills un-gap the layout.** Changing a monitor's SCALE in Omarchy's display panel applies a live rule with `position = "auto"`. That removes the gap between monitors until the next sync, so the mouse can cross. Press `Super + Ctrl + M` twice to lock again right away.
-- **Direction keys find no neighbour while locked.** Hyprland's `l`/`r`/`u`/`d` monitor dispatchers (`focusmonitor`, `movecurrentworkspacetomonitor`, `movewindow mon:`) only accept a monitor whose edge touches the current one. With the lock gap between the monitors they find nothing, so Omarchy's `Super + Shift + Alt + arrows` (move workspace to the left or right monitor) do nothing while locked. Use the plugin's jump keys or `omarchy-magnifier jump next`, or rebind those arrows to a helper that names the target monitor, as the per-monitor desktops setup in the Omarchy Config repo does.
+- **Direction keys find no neighbour while locked.** Hyprland's `l`/`r`/`u`/`d` monitor dispatchers (`focusmonitor`, `movecurrentworkspacetomonitor`, `movewindow mon:`) only accept a monitor whose edge touches the current one. With the lock gap between the monitors they find nothing, so Omarchy's `Super + Shift + Alt + arrows` (move workspace to the left or right monitor) do nothing while locked. Use the plugin's jump keys or `omarchy-magnifier jump next`, or rebind those arrows to a helper that names the target monitor instead of a direction.
 - **Three or more monitors** are handled, left to right with a gap between each, but only two have been tested.
 - **Pinch is touchpad only.** Touchscreens are not supported by Hyprland's `cursor_zoom` gesture.
 - **Mouse lock needs two monitors.** With one monitor it does nothing and tells you so.
@@ -213,7 +213,7 @@ Prints any error in your Hyprland config. A typo in the settings table shows up 
 hyprctl binds | grep -i magnifier
 ```
 
-Lists the plugin's bindings. Expect eight with the default settings, ten with `side_buttons = true`. Nothing listed means the `dofile(...)` line is missing from `~/.config/hypr/hyprland.lua` or the plugin folder is not where it expects.
+Lists the plugin's bindings. Expect ten with the default settings, twelve with `side_buttons = true`. Nothing listed means the `dofile(...)` line is missing from `~/.config/hypr/hyprland.lua` or the plugin folder is not where it expects.
 
 ```bash
 omarchy-shell magnifier ping
@@ -261,6 +261,10 @@ Hyprland renders the zoom only on the monitor under the pointer. The jump (`hypr
 Hyprland clamps pointer motion to the nearest monitor edge. The mouse lock (`hypr/lock.lua`) places the monitors far apart in the virtual layout, `lock_gap` logical pixels by default and always under Xwayland's coordinate limit, so no mouse movement can reach the other monitor. The gapped layout is written as monitor rules to `~/.local/state/omarchy/toggles/hypr/magnifier-mouse-lock.lua`, which Omarchy loads after your own `monitors.lua`. Each rule keeps the monitor's current mode, scale and rotation; only the position changes. Unlocking removes the file. The unlocked flag is `$XDG_RUNTIME_DIR/omarchy-magnifier-unlocked`.
 
 The whole Hyprland side is loaded with one `dofile(...)` line rather than `require`. The plugin id contains a dot, which Lua's module path would turn into a directory separator, and `dofile` is never cached, so every `hyprctl reload` re-evaluates the plugin like the rest of your config.
+
+## Contributing
+
+Bug reports and pull requests are welcome on [GitHub](https://github.com/JPDoesDev/omarchy-magnifier/issues). [CONTRIBUTING.md](CONTRIBUTING.md) explains how to run the plugin from a checkout, and [docs/TESTING.md](docs/TESTING.md) has the automated tests and the manual test plan used before each release. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

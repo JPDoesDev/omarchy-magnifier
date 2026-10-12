@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-10-11
 
 ### Added
 
@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Documented
 
-- Known limit: while the mouse is locked, Hyprland's directional monitor dispatchers (`l`/`r`/`u`/`d`) find no neighbour across the gap, so Omarchy's `Super + Shift + Alt + arrows` do nothing. Found on the two-monitor desk on 2026-10-11.
+- Known limit: while the mouse is locked, Hyprland's directional monitor dispatchers (`l`/`r`/`u`/`d`) find no neighbour across the gap, so Omarchy's `Super + Shift + Alt + arrows` do nothing. Found with two monitors on 2026-10-11.
 
 ### Fixed
 
@@ -37,4 +37,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `omarchy-magnifier` command line tool: `zoom in|out|toggle|preset|off|set <n>|status`, `jump next|prev`, `lock on|off|toggle|status`, `unfreeze`.
 - `install.sh` that adds the settings block and the `dofile` line to `hyprland.lua`, links the command line tool into `~/.local/bin` and reloads Hyprland; `install.sh --uninstall` reverses it.
 
+[1.1.0]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JPDoesDev/omarchy-magnifier/releases/tag/v1.0.0
