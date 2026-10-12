@@ -1,6 +1,6 @@
 # Magnifier plugin: feature verification checklist
 
-Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch on the laptop on 2026-10-11), [ ] not yet verified; many need a second monitor or the laptop touchpad. Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
+Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch on the laptop and the two-monitor sections on 2026-10-11), [ ] not yet verified. Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
 
 ## 1. Zoom keys and buttons (single monitor is enough)
 
@@ -52,28 +52,28 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 5.1 | Zoom to 500% on monitor A, Super + Ctrl + scroll down | pointer and keyboard focus land on B, at its centre on the first visit, zoom 100%, popup shows 100% | [ ] |
-| 5.2 | Look at monitor A while on B | A still shows the same 500% view (frozen zoom), video keeps playing in it | [ ] |
-| 5.3 | Zoom to 300% on B, move the pointer, jump back | A at 500% at the spot you left; B keeps a frozen 300% view | [ ] |
-| 5.4 | Jump again | B at 300% with the pointer where you left it | [ ] |
-| 5.5 | Scroll up instead of down | previous monitor; with two monitors both directions wrap | [ ] |
-| 5.6 | `omarchy-magnifier status` while one is frozen | lists the frozen output id and zoom | [ ] |
-| 5.7 | `omarchy-magnifier unfreeze` | frozen monitor returns to 100% | [ ] |
-| 5.8 | Jump with `omarchy-magnifier jump next` / `prev` | same as the keys | [ ] |
+| 5.1 | Zoom to 500% on monitor A, Super + Ctrl + scroll down | pointer and keyboard focus land on B, at its centre on the first visit, zoom 100%, popup shows 100% | [x] |
+| 5.2 | Look at monitor A while on B | A still shows the same 500% view (frozen zoom), video keeps playing in it | [x] |
+| 5.3 | Zoom to 300% on B, move the pointer, jump back | A at 500% at the spot you left; B keeps a frozen 300% view | [x] |
+| 5.4 | Jump again | B at 300% with the pointer where you left it | [x] |
+| 5.5 | Scroll up instead of down | previous monitor; with two monitors both directions wrap | [x] |
+| 5.6 | `omarchy-magnifier status` while one is frozen | lists the frozen output id and zoom | [x] |
+| 5.7 | `omarchy-magnifier unfreeze` | frozen monitor returns to 100% | [x] |
+| 5.8 | Jump with `omarchy-magnifier jump next` / `prev` | same as the keys | [x] |
 
 ## 6. Mouse lock (needs two monitors)
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 6.1 | Log in with two monitors | pointer cannot cross from one to the other; `omarchy-magnifier lock status` says locked | [ ] |
-| 6.2 | `hyprctl monitors -j` | second monitor sits far to the right (x around 20000 plus the first width) | [ ] |
-| 6.3 | Super + Ctrl + M | notification "Mouse unlocked", pointer crosses freely, monitors back side by side | [ ] |
-| 6.4 | Super + Ctrl + M again | notification "Mouse locked", layout gapped again | [ ] |
-| 6.5 | Unlock, drag a window to the other monitor, lock | window stays on the other monitor | [ ] |
-| 6.6 | Unplug and replug a monitor (or dock) | re-locks on its own, frozen views dropped, no reload storm (check `journalctl` or just that the screen settles within ten seconds) | [ ] |
-| 6.7 | Change SCALE in the Display panel while locked | layout un-gaps; Super + Ctrl + M twice re-locks | [ ] |
+| 6.1 | Log in with two monitors | pointer cannot cross from one to the other; `omarchy-magnifier lock status` says locked | [x] |
+| 6.2 | `hyprctl monitors -j` | second monitor sits far to the right (x around 20000 plus the first width) | [x] |
+| 6.3 | Super + Ctrl + M | notification "Mouse unlocked", pointer crosses freely, monitors back side by side | [x] |
+| 6.4 | Super + Ctrl + M again | notification "Mouse locked", layout gapped again | [x] |
+| 6.5 | Unlock, drag a window to the other monitor, lock | window stays on the other monitor | [x] |
+| 6.6 | Unplug and replug a monitor (or dock) | re-locks on its own, frozen views dropped, no reload storm (check `journalctl` or just that the screen settles within ten seconds) | [x] |
+| 6.7 | Change SCALE in the Display panel while locked | layout un-gaps; Super + Ctrl + M twice re-locks | [x] |
 | 6.8 | Super + Ctrl + M with one monitor | notification "Mouse lock needs two or more monitors", nothing else changes | [x] |
-| 6.9 | `omarchy update` while locked | the update does not reload Hyprland mid-transaction because of the plugin (reload guard honoured) | [ ] |
+| 6.9 | `omarchy update` while locked | the update does not reload Hyprland mid-transaction because of the plugin (reload guard honoured) | [x] |
 
 ## 7. Settings
 
@@ -94,7 +94,7 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | 8.2 | Ctrl + Alt + I again | back to normal; OSD says "Colours normal" | [x] |
 | 8.3 | Invert, then `hyprctl reload` | still inverted | [x] |
 | 8.4 | Invert, zoom to 300%, scroll around | inverted and magnified together, no flicker or patchwork | [x] |
-| 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [ ] two monitors |
+| 8.5 | Two monitors: invert, magnify A, jump to B | A stays frozen and inverted, B inverted | [x] |
 | 8.6 | `omarchy-magnifier invert status` and `status` | report inverted / normal | [x] |
 | 8.7 | Reboot | starts normal | [x] |
 | 8.8 | Set `invert = false`, reload while inverted | colours return to normal and Ctrl + Alt + I does nothing | [x] in tests |
@@ -107,5 +107,5 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | 9.2 | `install.sh --uninstall` then `install.sh` | `hyprland.lua` identical to before, plugin back | [x] on a scratch config |
 | 9.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 | [x] |
 | 9.4 | Install the community per-window invert plugin while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside | [ ] optional |
-| 9.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [ ] two monitors |
+| 9.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [x] |
 | 9.6 | `tests/run` in the checkout | 7 files pass | [x] |
