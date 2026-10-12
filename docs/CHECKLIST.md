@@ -1,6 +1,6 @@
 # Magnifier plugin: feature verification checklist
 
-Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch on the laptop and the two-monitor sections on 2026-10-11), [ ] not yet verified. Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
+Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch on the laptop and the two-monitor sections on 2026-10-11), [ ] not yet verified, [-] skipped on purpose (2026-10-11). Expected results assume the desktop settings (preset 6, step 2, side buttons on, high-contrast popup).
 
 ## 1. Zoom keys and buttons (single monitor is enough)
 
@@ -18,7 +18,7 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | 1.10 | Super + Ctrl + Alt + Z (Omarchy reset) | 100% | [x] |
 | 1.11 | Super + K | all Magnifier entries are listed with descriptions (twelve with the desktop settings) | [x] |
 | 1.12 | `omarchy-magnifier zoom set 3`, `in`, `out`, `toggle`, `off`, `status` | each does what it says; status prints the factor | [x] |
-| 1.13 | Ctrl + Alt + = three times, then Ctrl + Alt + - | 300%, 500%, 700%, then 500%; same clamps as the wheel | [ ] |
+| 1.13 | Ctrl + Alt + = three times, then Ctrl + Alt + - | 300%, 500%, 700%, then 500%; same clamps as the wheel | [x] |
 
 ## 2. Popup (OSD)
 
@@ -80,12 +80,12 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 
 | # | Do this | Expect | Status |
 |---|---|---|---|
-| 7.1 | Set `step = 1`, `hyprctl reload`, scroll | 100% steps | [ ] |
+| 7.1 | Set `step = 1`, `hyprctl reload`, scroll | 100% steps | [-] skipped: covered by `tests/settings-test.sh` |
 | 7.2 | Set `keys = { off = false }`, reload | Ctrl + Alt + X does nothing; one Magnifier bind fewer in Super + K (eleven with the desktop settings) | [x] in tests |
 | 7.3 | Set `side_buttons = false`, reload | two binds fewer; side buttons do nothing | [x] in tests |
 | 7.4 | Set `mouse_lock = false` on a locked two-monitor desk, reload | layout un-gaps, pointer free | [x] in tests |
 | 7.5 | Put garbage in the table (`step = "fast"`, `osd_style = 5`) | plugin still loads with defaults; no config error | [x] in tests |
-| 7.6 | Remove the whole block, reload | all Magnifier binds gone, Omarchy's own zoom keys still work | [ ] |
+| 7.6 | Remove the whole block, reload | all Magnifier binds gone, Omarchy's own zoom keys still work | [-] skipped: covered by `tests/settings-test.sh` and the install round-trip |
 
 ## 8. Colour inversion
 
@@ -107,6 +107,6 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | 9.1 | `install.sh` twice | second run reports everything already present, no duplicate block | [x] |
 | 9.2 | `install.sh --uninstall` then `install.sh` | `hyprland.lua` identical to before, plugin back | [x] on a scratch config |
 | 9.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 | [x] |
-| 9.4 | Install the community per-window invert plugin while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside | [ ] optional |
+| 9.4 | Install the community per-window invert plugin while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside | [-] skipped: optional |
 | 9.5 | Per-monitor desktops (Super + Ctrl + Shift + scroll) | still send a desktop across with pointer and focus, zoom reset on arrival | [x] |
 | 9.6 | `tests/run` in the checkout | 7 files pass | [x] |
