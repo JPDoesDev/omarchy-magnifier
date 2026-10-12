@@ -102,15 +102,19 @@ return function(mag)
     mag.bind("SUPER + mouse:" .. math.floor(cfg.side_button_out), "Magnifier zoom off (side button)", mag.zoom_off)
   end
 
-  -- Hold SUPER and pinch on the touchpad. Hyprland's gesture ignores our
-  -- limits and shows no popup; the timer below catches up with both.
+  -- Hold SUPER and pinch on the touchpad. mode = "live" makes Hyprland follow
+  -- the pinch continuously, anchored where the pointer was when it began;
+  -- without it the gesture is a toggle to zoom_level, so a finished pinch
+  -- snapped any magnified screen straight back to 100%. Hyprland's gesture
+  -- ignores our limits and shows no popup; the timer below catches up with both.
   if cfg.pinch then
     hl.gesture({
       fingers = math.floor(cfg.pinch_fingers),
       direction = "pinch",
       mods = "SUPER",
       action = "cursor_zoom",
-      zoom_level = cfg.pinch_zoom_level,
+      mode = "live",
+      zoom_level = cfg.pinch_zoom_level, -- unused by Hyprland in live mode; kept as the documented placeholder
     })
   end
 
