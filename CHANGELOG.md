@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Documented
+
+- Known limit: while the mouse is locked, Hyprland's directional monitor dispatchers (`l`/`r`/`u`/`d`) find no neighbour across the gap, so Omarchy's `Super + Shift + Alt + arrows` do nothing. Found on the two-monitor desk on 2026-10-11.
+
 ### Fixed
 
 - `Super + pinch` now zooms continuously. The gesture was registered without `mode = "live"`, so Hyprland treated it as a toggle to `pinch_zoom_level` (1.0): a finished pinch did nothing at 100% and snapped any magnified screen back to 100%, and whether the fingers spread or squeezed made no difference. Found in the laptop live test on 2026-10-11.
