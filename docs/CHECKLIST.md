@@ -16,8 +16,9 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | 1.8 | Super + back side button (mouse:275) | 100% | [x] |
 | 1.9 | Super + Ctrl + Z (Omarchy's own key) | zoom +100% as before, and the new level is kept across a reload | [x] |
 | 1.10 | Super + Ctrl + Alt + Z (Omarchy reset) | 100% | [x] |
-| 1.11 | Super + K | the nine Magnifier entries are listed with descriptions | [x] |
+| 1.11 | Super + K | all Magnifier entries are listed with descriptions (twelve with the desktop settings) | [x] |
 | 1.12 | `omarchy-magnifier zoom set 3`, `in`, `out`, `toggle`, `off`, `status` | each does what it says; status prints the factor | [x] |
+| 1.13 | Ctrl + Alt + = three times, then Ctrl + Alt + - | 300%, 500%, 700%, then 500%; same clamps as the wheel | [ ] |
 
 ## 2. Popup (OSD)
 
@@ -80,8 +81,8 @@ Legend: [x] verified (by script, or by hand on the desktop on 2026-10-10, pinch 
 | # | Do this | Expect | Status |
 |---|---|---|---|
 | 7.1 | Set `step = 1`, `hyprctl reload`, scroll | 100% steps | [ ] |
-| 7.2 | Set `keys = { off = false }`, reload | Ctrl + Alt + X does nothing; eight Magnifier binds in Super + K | [x] in tests |
-| 7.3 | Set `side_buttons = false`, reload | seven binds; side buttons do nothing | [x] in tests |
+| 7.2 | Set `keys = { off = false }`, reload | Ctrl + Alt + X does nothing; one Magnifier bind fewer in Super + K (eleven with the desktop settings) | [x] in tests |
+| 7.3 | Set `side_buttons = false`, reload | two binds fewer; side buttons do nothing | [x] in tests |
 | 7.4 | Set `mouse_lock = false` on a locked two-monitor desk, reload | layout un-gaps, pointer free | [x] in tests |
 | 7.5 | Put garbage in the table (`step = "fast"`, `osd_style = 5`) | plugin still loads with defaults; no config error | [x] in tests |
 | 7.6 | Remove the whole block, reload | all Magnifier binds gone, Omarchy's own zoom keys still work | [ ] |

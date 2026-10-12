@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Keyboard-only zoom steps: `Ctrl + Alt + =` zooms in and `Ctrl + Alt + -` zooms out by one step, the same as the scroll wheel. New settings `keys.zoom_in_key` and `keys.zoom_out_key`; set either to `false` to leave it unbound.
+
 ### Documented
 
 - Known limit: while the mouse is locked, Hyprland's directional monitor dispatchers (`l`/`r`/`u`/`d`) find no neighbour across the gap, so Omarchy's `Super + Shift + Alt + arrows` do nothing. Found on the two-monitor desk on 2026-10-11.
