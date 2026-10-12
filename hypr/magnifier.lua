@@ -95,6 +95,8 @@ return function(mag)
 
   mag.bind(cfg.keys.zoom_in, "Magnifier zoom in", mag.zoom_in)
   mag.bind(cfg.keys.zoom_out, "Magnifier zoom out", mag.zoom_out)
+  mag.bind(cfg.keys.zoom_in_key, "Magnifier zoom in (key)", mag.zoom_in)
+  mag.bind(cfg.keys.zoom_out_key, "Magnifier zoom out (key)", mag.zoom_out)
   mag.bind(cfg.keys.preset, "Magnifier zoom to preset", mag.zoom_preset)
   mag.bind(cfg.keys.off, "Magnifier zoom off", mag.zoom_off)
   if cfg.side_buttons then

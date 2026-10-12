@@ -10,6 +10,8 @@ A screen magnifier for low-vision users of [Omarchy](https://omarchy.org/). Zoom
 |---|---|
 | `Ctrl + Alt + Scroll up` | Zoom in by one step |
 | `Ctrl + Alt + Scroll down` | Zoom out by one step |
+| `Ctrl + Alt + =` | Zoom in by one step (keyboard only) |
+| `Ctrl + Alt + -` | Zoom out by one step (keyboard only) |
 | `Ctrl + Alt + Z` | Zoom to the preset (300%) |
 | `Ctrl + Alt + X` | Zoom off (100%) |
 | `Ctrl + Alt + I` | Invert the colours of every screen (press again to restore) |
@@ -106,6 +108,8 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `lock_gap` | `20000` | Logical pixels placed between monitors while locked. |
 | `keys.zoom_in` | `"CTRL + ALT + mouse_up"` | Zoom in. Set to `false` to leave it unbound. |
 | `keys.zoom_out` | `"CTRL + ALT + mouse_down"` | Zoom out. |
+| `keys.zoom_in_key` | `"CTRL + ALT + equal"` | Zoom in from the keyboard (`Ctrl + Alt + =`). |
+| `keys.zoom_out_key` | `"CTRL + ALT + minus"` | Zoom out from the keyboard (`Ctrl + Alt + -`). |
 | `keys.preset` | `"CTRL + ALT + Z"` | Zoom to `preset_zoom`. |
 | `keys.off` | `"CTRL + ALT + X"` | Zoom to `off_zoom`. |
 | `keys.invert` | `"CTRL + ALT + I"` | Toggle colour inversion. |

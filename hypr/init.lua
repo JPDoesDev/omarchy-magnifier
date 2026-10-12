@@ -45,6 +45,8 @@ local DEFAULTS = {
   keys = {
     zoom_in = "CTRL + ALT + mouse_up",
     zoom_out = "CTRL + ALT + mouse_down",
+    zoom_in_key = "CTRL + ALT + equal", -- keyboard-only step: Ctrl + Alt + =
+    zoom_out_key = "CTRL + ALT + minus", -- keyboard-only step: Ctrl + Alt + -
     preset = "CTRL + ALT + Z",
     off = "CTRL + ALT + X",
     invert = "CTRL + ALT + I",
