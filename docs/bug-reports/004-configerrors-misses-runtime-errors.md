@@ -1,5 +1,7 @@
 # 004: `hyprctl configerrors` never shows runtime Lua errors and keeps stale `hyprctl eval` errors
 
+GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/4
+
 Filed 2026-10-23. Status: open. Documentation and CLI issue, verified in `CConfigManager::addError`, `eval` and `verify` at v0.56.2.
 
 ## What happens

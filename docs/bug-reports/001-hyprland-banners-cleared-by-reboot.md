@@ -1,5 +1,7 @@
 # 001: Hyprland banners near the top of the screen, cleared by a reboot
 
+GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/1
+
 Filed 2026-10-23 on the laptop (wy02-yoga, Hyprland 0.56.2, Omarchy). Status: open, root cause not captured.
 
 ## Symptom

@@ -1,5 +1,7 @@
 # 003: desktops.lua re-homes workspaces inside a 50 ms timer and indexes a monitor that may be gone
 
+GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/3
+
 Filed 2026-10-23. Status: open. Lives in the desktops module (master copy
 `~/.local/share/accessibility/desktops/desktops.lua`, live copy
 `~/.config/hypr/desktops.lua`, documented in omarchy-config), not in this

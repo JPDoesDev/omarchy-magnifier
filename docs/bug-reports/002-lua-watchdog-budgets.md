@@ -1,5 +1,7 @@
 # 002: Plugin callbacks run subprocesses and shader rebuilds inside Hyprland's Lua watchdog
 
+GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/2
+
 Filed 2026-10-23. Status: open. Found by reading `src/config/lua/ConfigManager.{hpp,cpp}` at v0.56.2 against `hypr/*.lua`.
 
 ## Facts about Hyprland 0.56.2
