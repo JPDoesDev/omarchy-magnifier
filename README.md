@@ -46,7 +46,7 @@ omarchy plugin add https://github.com/JPDoesDev/omarchy-magnifier --enable
 
 `install.sh` does four things, and does each only once even if you run it again:
 
-1. Appends a marked settings block and the `dofile(...)` line to `~/.config/hypr/hyprland.lua`.
+1. Adds a marked settings block and the `dofile(...)` line to `~/.config/hypr/hyprland.lua`, at the end, or above an existing `require("hypr.desktops")` line, since that module uses the plugin's Lua API and must load after it.
 2. Symlinks `bin/omarchy-magnifier` into `~/.local/bin` so the command line tool is on your path.
 3. Makes sure the popup plugin is enabled in `omarchy-shell`.
 4. Reloads Hyprland and checks that the bindings and the popup answer.
@@ -106,6 +106,7 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `jump` | `true` | `Super + Ctrl + scroll` hops between monitors with per-monitor memory. |
 | `mouse_lock` | `true` | Keep the pointer on one monitor until a jump (two or more monitors). |
 | `lock_gap` | `20000` | Logical pixels placed between monitors while locked. |
+| `wheel_every_notch` | `true` | Set Hyprland's `binds:scroll_event_delay` to 0 while a wheel chord is bound, so every notch reaches the magnifier. With Hyprland's default 300 ms delay a quick `Ctrl + Alt + scroll` sends the extra notches to the focused window with `Ctrl` held, which zooms a browser page. Side effect: Omarchy's own `Super + scroll` binds fire on every notch too. Set `false` to leave the delay alone. |
 | `keys.zoom_in` | `"CTRL + ALT + mouse_up"` | Zoom in. Set to `false` to leave it unbound. |
 | `keys.zoom_out` | `"CTRL + ALT + mouse_down"` | Zoom out. |
 | `keys.zoom_in_key` | `"CTRL + ALT + equal"` | Zoom in from the keyboard (`Ctrl + Alt + =`). |
@@ -181,6 +182,7 @@ omarchy-magnifier jump prev        # same as Super + Ctrl + Scroll up
 omarchy-magnifier lock on|off|toggle|status
 omarchy-magnifier unfreeze         # drop every frozen view
 omarchy-magnifier status           # zoom, lock state and frozen monitors in one go
+omarchy-magnifier doctor           # save everything a bug report needs into one folder
 ```
 
 The same functions are reachable from any Hyprland Lua file through the `OmarchyMagnifier` table, for example `hyprctl eval 'OmarchyMagnifier.zoom_set(4)'`.
@@ -194,6 +196,7 @@ The same functions are reachable from any Hyprland Lua file through the `Omarchy
 - **Reboot clears the memory.** Zoom, per-monitor memory and frozen views survive a Hyprland reload but are gone after a reboot.
 - **Scale pills un-gap the layout.** Changing a monitor's SCALE in Omarchy's display panel applies a live rule with `position = "auto"`. That removes the gap between monitors until the next sync, so the mouse can cross. Press `Super + Ctrl + M` twice to lock again right away.
 - **Direction keys find no neighbour while locked.** Hyprland's `l`/`r`/`u`/`d` monitor dispatchers (`focusmonitor`, `movecurrentworkspacetomonitor`, `movewindow mon:`) only accept a monitor whose edge touches the current one. With the lock gap between the monitors they find nothing, so Omarchy's `Super + Shift + Alt + arrows` (move workspace to the left or right monitor) do nothing while locked. Use the plugin's jump keys or `omarchy-magnifier jump next`, or rebind those arrows to a helper that names the target monitor instead of a direction.
+- **Every wheel notch counts, everywhere.** Hyprland normally ignores wheel binds for 300 ms after each one and passes the extra notches to the window, which is how a fast `Ctrl + Alt + scroll` also zoomed a browser page. The plugin sets that delay to 0 (`wheel_every_notch`), so Omarchy's `Super + scroll` workspace binds step once per notch as well.
 - **Three or more monitors** are handled, left to right with a gap between each, but only two have been tested.
 - **Pinch is touchpad only.** Touchscreens are not supported by Hyprland's `cursor_zoom` gesture.
 - **Mouse lock needs two monitors.** With one monitor it does nothing and tells you so.
@@ -201,13 +204,26 @@ The same functions are reachable from any Hyprland Lua file through the `Omarchy
 
 ### Something does not work
 
-Run these in a terminal, in this order.
+Two kinds of error look alike on screen and live in different places:
+
+- A red **"Your config has errors"** banner is a config-time error. `hyprctl configerrors` prints it, and `hyprctl reload` clears it once the cause is gone.
+- A yellow **"Runtime error in lua"** banner comes from a key, timer or event callback and stays for five seconds. `hyprctl configerrors` never lists it. Its text is only in `$XDG_RUNTIME_DIR/hypr/*/hyprland.log`, and a reboot deletes that log.
+
+Also, a failed `hyprctl eval` (the command line tool uses it) leaves its error in `hyprctl configerrors` until the next `hyprctl reload`, even though the config is fine.
+
+Start with the collector. It saves the config errors, the log tail, the plugin's state files and the shell journal lines into one folder and prints a summary, so do this before rebooting:
+
+```bash
+omarchy-magnifier doctor
+```
+
+Then, if you need to narrow it down, run these in a terminal, in this order.
 
 ```bash
 hyprctl configerrors
 ```
 
-Prints any error in your Hyprland config. A typo in the settings table shows up here. The plugin itself falls back to defaults on bad values, but a Lua syntax error stops the whole file.
+Prints config-time errors only. A typo in the settings table shows up here. The plugin itself falls back to defaults on bad values, but a Lua syntax error stops the whole file.
 
 ```bash
 hyprctl binds | grep -i magnifier
@@ -239,9 +255,7 @@ If the mouse stays locked after you turned the lock off, remove the rule file an
 rm -f ~/.local/state/omarchy/toggles/hypr/magnifier-mouse-lock.lua; hyprctl reload
 ```
 
-A yellow "Runtime error in lua" banner never appears in `hyprctl configerrors`; its text is only in
-`$XDG_RUNTIME_DIR/hypr/*/hyprland.log`, which a reboot deletes. Save the log and `hyprctl configerrors`
-before rebooting; the steps and the open reports are in [`docs/bug-reports/`](docs/bug-reports/README.md).
+Open reports, and what to attach to a new one, are in [`docs/bug-reports/`](docs/bug-reports/README.md).
 
 ## Removal
 

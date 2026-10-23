@@ -2,7 +2,7 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/3
 
-Filed 2026-10-23. Status: open. Lives in the desktops module (master copy
+Filed 2026-10-23. Status: fixed 2026-10-23 in the master copy (`rehome()` does one `workspace.move` per 30 ms oneshot timer tick, re-looks up every monitor before touching it, and a new monitor event cancels a re-home in progress; `send()` uses the plugin's `batch`). Lives in the desktops module (master copy
 `~/.local/share/accessibility/desktops/desktops.lua`, live copy
 `~/.config/hypr/desktops.lua`, documented in omarchy-config), not in this
 repo, but it is part of the same setup and the same watchdog applies (report 002).

@@ -7,11 +7,12 @@ report gets a closing line at the top.
 | # | Issue | Title | Where | Status |
 |---|---|---|---|---|
 | [001](001-hyprland-banners-cleared-by-reboot.md) | [#1](https://github.com/JPDoesDev/omarchy-magnifier/issues/1) | Hyprland banners near the top of the screen, cleared by a reboot | both machines | open: cause not captured |
-| [002](002-lua-watchdog-budgets.md) | [#2](https://github.com/JPDoesDev/omarchy-magnifier/issues/2) | Plugin callbacks run subprocesses and shader rebuilds inside Hyprland's 50 to 100 ms Lua watchdog | `hypr/lock.lua`, `hypr/jump.lua`, `hypr/screenfx.lua` | open |
-| [003](003-desktops-rehome-timer-budget.md) | [#3](https://github.com/JPDoesDev/omarchy-magnifier/issues/3) | `desktops.lua` re-homes workspaces inside a 50 ms timer and indexes a monitor that may be gone | desktops module (omarchy-config) | open |
-| [004](004-configerrors-misses-runtime-errors.md) | [#4](https://github.com/JPDoesDev/omarchy-magnifier/issues/4) | `hyprctl configerrors` never shows runtime Lua errors and keeps stale `hyprctl eval` errors | README troubleshooting, `bin/omarchy-magnifier` | open |
-| [005](005-desktop-buckets-plugin-not-loaded.md) | [#5](https://github.com/JPDoesDev/omarchy-magnifier/issues/5) | "Desktop buckets: the Magnifier plugin is not loaded" notification on 2026-10-11 | `~/.config/hypr/hyprland.lua` ordering | needs confirming closed |
+| [002](002-lua-watchdog-budgets.md) | [#2](https://github.com/JPDoesDev/omarchy-magnifier/issues/2) | Plugin callbacks run subprocesses and shader rebuilds inside Hyprland's 50 to 100 ms Lua watchdog | `hypr/lock.lua`, `hypr/jump.lua`, `hypr/screenfx.lua` | fixed 2026-10-23, unreleased |
+| [003](003-desktops-rehome-timer-budget.md) | [#3](https://github.com/JPDoesDev/omarchy-magnifier/issues/3) | `desktops.lua` re-homes workspaces inside a 50 ms timer and indexes a monitor that may be gone | desktops module (omarchy-config) | fixed in master copy, installed live and documented 2026-10-23 |
+| [004](004-configerrors-misses-runtime-errors.md) | [#4](https://github.com/JPDoesDev/omarchy-magnifier/issues/4) | `hyprctl configerrors` never shows runtime Lua errors and keeps stale `hyprctl eval` errors | README troubleshooting, `bin/omarchy-magnifier` | fixed 2026-10-23, unreleased |
+| [005](005-desktop-buckets-plugin-not-loaded.md) | [#5](https://github.com/JPDoesDev/omarchy-magnifier/issues/5) | "Desktop buckets: the Magnifier plugin is not loaded" notification on 2026-10-11 | `~/.config/hypr/hyprland.lua` ordering | fixed 2026-10-23, unreleased; close on release |
 | [006](006-lock-screen-keeps-zoom.md) | [#6](https://github.com/JPDoesDev/omarchy-magnifier/issues/6) | Lock screen comes up at the current zoom and the zoom keys do not work while locked; it should always open at 100% | `hypr/init.lua` (`mag.bind`), `hypr/magnifier.lua`, Omarchy lock hooks | open |
+| [007](007-ctrl-alt-scroll-leaks-to-browser.md) | [#7](https://github.com/JPDoesDev/omarchy-magnifier/issues/7) | `Ctrl + Alt + scroll` in a browser also zooms the page: wheel notches inside `binds:scroll_event_delay` leak to the window with Ctrl held | Hyprland `onAxisEvent` throttle; `hypr/magnifier.lua` wheel binds, README troubleshooting | fixed 2026-10-23 (`wheel_every_notch`), unreleased; upstream report to file |
 
 ## Catching the next banner
 

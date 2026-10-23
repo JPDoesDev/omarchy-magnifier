@@ -4,6 +4,25 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `wheel_every_notch` (default `true`): sets Hyprland's `binds:scroll_event_delay` to 0 while a wheel chord is bound. With the default 300 ms delay, wheel notches arriving within the delay skip the binds and reach the focused window with `Ctrl` still held, so a quick `Ctrl + Alt + scroll` also zoomed a browser page (#7). Side effect: Omarchy's `Super + scroll` binds now fire on every notch.
+- `omarchy-magnifier doctor [DIR]`: saves `hyprctl configerrors`, the tail of Hyprland's log, the plugin's runtime files, the mouse lock rule file and the magnifier lines of the shell journal into one folder and prints a summary, before a reboot wipes the log (#4).
+- `OmarchyMagnifier.batch(fn)`: runs `fn` with the screen shader rebuilt once at the end, for modules that chain `leave_monitor` and `enter_monitor`.
+
+### Changed
+
+- Mouse lock `sync()` no longer starts a process: Omarchy's reload guard is read from its state directory (`/run/omarchy/hyprland-reload-guard`) instead of through `io.popen`, and the toggles directory is created only when missing instead of with `mkdir -p` on every write. The syncs run inside 50 ms timer callbacks, where two forks could trip Hyprland's Lua watchdog (#2).
+- A monitor jump rebuilds the screen shader once instead of twice (freeze of the monitor left, unfreeze of the target), halving the file writes and `hl.config` calls inside the 100 ms keybind budget (#2).
+- `install.sh` inserts the settings block above an existing `require("hypr.desktops")` line instead of appending it after, and warns when an existing block sits below that line, since that module needs the plugin loaded first (#5).
+- The command line tool says that a failed `hyprctl eval` stays in `hyprctl configerrors` until the next reload (#4).
+
+### Documented
+
+- README troubleshooting: the yellow "Runtime error in lua" banner is never in `hyprctl configerrors`, where its text actually is, and the stale eval errors (#4). New known limit for `wheel_every_notch`.
+
 ## [1.1.0] - 2026-10-11
 
 ### Added
@@ -37,5 +56,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `omarchy-magnifier` command line tool: `zoom in|out|toggle|preset|off|set <n>|status`, `jump next|prev`, `lock on|off|toggle|status`, `unfreeze`.
 - `install.sh` that adds the settings block and the `dofile` line to `hyprland.lua`, links the command line tool into `~/.local/bin` and reloads Hyprland; `install.sh --uninstall` reverses it.
 
+[Unreleased]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JPDoesDev/omarchy-magnifier/releases/tag/v1.0.0

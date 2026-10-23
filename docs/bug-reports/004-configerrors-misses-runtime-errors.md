@@ -2,7 +2,7 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/4
 
-Filed 2026-10-23. Status: open. Documentation and CLI issue, verified in `CConfigManager::addError`, `eval` and `verify` at v0.56.2.
+Filed 2026-10-23. Status: fixed 2026-10-23, unreleased (README troubleshooting rewritten, `omarchy-magnifier doctor` added, the CLI names the stale-eval behaviour). Documentation and CLI issue, verified in `CConfigManager::addError`, `eval` and `verify` at v0.56.2.
 
 ## What happens
 

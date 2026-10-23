@@ -48,6 +48,7 @@ Sections 1 to 3, 7 and 8 need one monitor. Section 4 needs a touchpad. Sections 
 | 1.11 | Super + K | all Magnifier entries are listed with descriptions (twelve with the settings above) |
 | 1.12 | `omarchy-magnifier zoom set 3`, `in`, `out`, `toggle`, `off`, `status` | each does what it says; status prints the factor |
 | 1.13 | Ctrl + Alt + = three times, then Ctrl + Alt + - | 300%, 500%, 700%, then 500%; same clamps as the wheel |
+| 1.14 | In a browser at page zoom 100%, three fast notches of Ctrl + Alt + scroll up | magnifier steps three times; the page zoom stays 100% (`hyprctl getoption binds:scroll_event_delay` reports 0) |
 
 ### 2. Popup (OSD)
 
@@ -104,6 +105,7 @@ Sections 1 to 3, 7 and 8 need one monitor. Section 4 needs a touchpad. Sections 
 | 6.7 | Change SCALE in the Display panel while locked | layout un-gaps; Super + Ctrl + M twice re-locks |
 | 6.8 | Super + Ctrl + M with one monitor | notification "Mouse lock needs two or more monitors", nothing else changes |
 | 6.9 | `omarchy update` while locked | the update does not reload Hyprland mid-transaction because of the plugin (reload guard honoured) |
+| 6.10 | `omarchy-hyprland-reload-guard pause`, then `omarchy-magnifier lock off`, `lock on`, then `resume` | no reload while paused (`hyprctl monitors` keeps its layout); the resume reloads and the gap comes back |
 
 ### 7. Settings
 
@@ -138,3 +140,5 @@ Sections 1 to 3, 7 and 8 need one monitor. Section 4 needs a touchpad. Sections 
 | 9.3 | `omarchy plugin validate ~/.config/omarchy/plugins/jpdoesdev.magnifier` | exit 0 |
 | 9.4 | Install another plugin that sets a screen shader (for example a per-window inversion plugin) while a monitor is frozen | one notification that another shader is active; the plugin's invert and frozen zoom step aside |
 | 9.5 | `tests/run` in the checkout | every test file passes |
+| 9.6 | `install.sh --uninstall`, then `install.sh` on a `hyprland.lua` that has `require("hypr.desktops")` | the block lands above that line (and above its comment); no "Magnifier plugin is not loaded" notification after the reload |
+| 9.7 | `omarchy-magnifier doctor` | prints config errors (or none), runtime Lua errors from the log (or none), the bind count and the status; the folder it names holds `configerrors.txt`, `hyprland-*.log`, `binds.txt`, `monitors.json` and the state files |
