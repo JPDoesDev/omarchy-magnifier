@@ -37,26 +37,22 @@ require_command() {
 }
 
 # Point HOME, XDG_RUNTIME_DIR and XDG_STATE_HOME at a throwaway directory so
-# the plugin never reads or writes a real file, and put a stub
-# omarchy-hyprland-reload-guard first on PATH. The stub reports "paused" only
-# while $MAG_TEST_TMP/guard-paused exists (default: not paused, exit 1).
+# the plugin never reads or writes a real file, and point the reload guard's
+# state directory at a scratch path. Omarchy's omarchy-hyprland-reload-guard
+# creates that directory, with one file per paused Hyprland instance, while a
+# pause is on and removes it on resume; the plugin reads it the same way, so a
+# test pauses the guard by creating $MAG_TEST_TMP/reload-guard/<signature>.
 scratch_env() {
   MAG_TEST_TMP=$(mktemp -d)
   trap 'rm -rf "$MAG_TEST_TMP"' EXIT
-  mkdir -p "$MAG_TEST_TMP/home" "$MAG_TEST_TMP/runtime" "$MAG_TEST_TMP/state" "$MAG_TEST_TMP/bin"
-
-  cat > "$MAG_TEST_TMP/bin/omarchy-hyprland-reload-guard" <<SH
-#!/bin/bash
-[[ \$1 == paused ]] || exit 1
-[[ -e "$MAG_TEST_TMP/guard-paused" ]]
-SH
-  chmod +x "$MAG_TEST_TMP/bin/omarchy-hyprland-reload-guard"
+  mkdir -p "$MAG_TEST_TMP/home" "$MAG_TEST_TMP/runtime" "$MAG_TEST_TMP/state"
 
   export MAG_TEST_TMP
   export HOME="$MAG_TEST_TMP/home"
   export XDG_RUNTIME_DIR="$MAG_TEST_TMP/runtime"
   export XDG_STATE_HOME="$MAG_TEST_TMP/state"
-  export PATH="$MAG_TEST_TMP/bin:$PATH"
+  export OMARCHY_HYPRLAND_RELOAD_GUARD_STATE_DIR="$MAG_TEST_TMP/reload-guard"
+  export HYPRLAND_INSTANCE_SIGNATURE="test-instance"
 }
 
 # Run a Lua test body from stdin with tests/hl-stub.lua bound as `stub`.

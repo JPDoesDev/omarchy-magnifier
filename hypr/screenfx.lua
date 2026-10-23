@@ -115,7 +115,28 @@ return function(mag)
 
   local M = {}
 
+  -- While a batch runs, apply() only notes that the shader needs rebuilding;
+  -- the rebuild happens once when the batch ends. A jump freezes one output
+  -- and unfreezes another, and each rebuild is a file write plus two
+  -- hl.config calls inside a 100 ms keybind budget, so they are coalesced.
+  local batch_depth, batch_dirty = 0, false
+
+  function M.batch(fn)
+    batch_depth = batch_depth + 1
+    local ok, err = pcall(fn)
+    batch_depth = batch_depth - 1
+    if batch_depth == 0 and batch_dirty then
+      batch_dirty = false
+      M.apply()
+    end
+    if not ok then error(err, 0) end
+  end
+
   function M.apply()
+    if batch_depth > 0 then
+      batch_dirty = true
+      return
+    end
     local frozen = read_frozen()
     local invert = inverted()
     if not slot_available() then return end
@@ -188,6 +209,7 @@ return function(mag)
   mag.screenfx = M
   mag.api.unfreeze_all = M.unfreeze_all
   mag.api.invert = M.set_invert
+  mag.api.batch = M.batch -- for modules that chain leave_monitor / enter_monitor
 
   if cfg.invert then
     mag.bind(cfg.keys.invert, "Magnifier invert colours", function() M.set_invert("toggle") end)

@@ -81,8 +81,11 @@ return function(mag)
   local function jump(direction)
     local target, cur = neighbour(direction)
     if not target then return false end
-    leave_monitor(cur)
-    enter_monitor(target)
+    -- One shader rebuild for the freeze and the unfreeze together.
+    screenfx.batch(function()
+      leave_monitor(cur)
+      enter_monitor(target)
+    end)
     return true
   end
 

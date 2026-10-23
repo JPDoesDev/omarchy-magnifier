@@ -74,6 +74,8 @@ stub.check(S.calls.dispatch[1].dispatcher == "focus" and S.calls.dispatch[2].dis
 stub.eq(S:last_config("cursor.zoom_factor"), 1, "a first visit comes up at off_zoom")
 stub.eq(#S:execs("magnifier show"), 1, "the arrival zoom is shown once")
 stub.eq(S:last_config("decoration.screen_shader"), SHADER, "the frozen shader is installed for the monitor left behind")
+stub.eq(#S:config_values("decoration.screen_shader"), 2,
+  "a jump rebuilds the shader once (clear + set), not once for the freeze and again for the unfreeze")
 
 -- Work on eDP-1, zoom to 2, then jump back: DP-1 restores 3x at (100, 200).
 S.cursor = { x = 3200, y = 400 }
@@ -89,6 +91,7 @@ move = S:dispatched("cursor.move")
 stub.check(move[1].args[1].x == 100 and move[1].args[1].y == 200, "the pointer returns to DP-1's remembered spot")
 stub.eq(S:dispatched("focus")[1].args[1].monitor, "DP-1", "focus returns to DP-1")
 stub.eq(S:last_config("cursor.zoom_factor"), 3, "DP-1's remembered zoom 3 is restored")
+stub.eq(#S:config_values("decoration.screen_shader"), 2, "the jump back also rebuilds the shader once")
 
 -- Leave DP-1 at 1x: nothing frozen there; arrive on eDP-1: its frozen entry
 -- goes and the file disappears when it was the last one.

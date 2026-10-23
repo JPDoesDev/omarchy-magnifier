@@ -91,9 +91,15 @@ return function(mag)
   -- Writes `content` unless identical; returns true when it changed.
   local function write_flag(content)
     if read_file(FLAG_FILE) == content then return false end
-    os.execute("mkdir -p " .. mag.shell_quote(TOGGLES_DIR))
     local f = io.open(FLAG_FILE, "w")
-    if not f then return false end
+    if not f then
+      -- The toggles directory is part of every Omarchy install (flags.lua
+      -- lives there). Creating it is the one subprocess left on this path,
+      -- and only for a missing directory. sync() runs inside 50 ms timers.
+      os.execute("mkdir -p " .. mag.shell_quote(TOGGLES_DIR))
+      f = io.open(FLAG_FILE, "w")
+      if not f then return false end
+    end
     f:write(content)
     f:close()
     return true
@@ -105,15 +111,20 @@ return function(mag)
     return true
   end
 
+  -- Don't reload Hyprland into a half-replaced config mid-update. Omarchy's
+  -- reload guard (`omarchy-hyprland-reload-guard pause`) records every paused
+  -- instance as a file named by its signature in this directory and removes
+  -- the directory on resume, so "paused" can be read from the file system
+  -- without starting a shell: sync() runs inside 50 ms timer callbacks, and a
+  -- subprocess there is what report 002 is about.
+  local GUARD_DIR = os.getenv("OMARCHY_HYPRLAND_RELOAD_GUARD_STATE_DIR") or "/run/omarchy/hyprland-reload-guard"
+
   local function reload_paused()
-    -- Don't reload Hyprland into a half-replaced config mid-update. Hyprland
-    -- reaps its own children, so os.execute cannot see an exit status here;
-    -- the status is read back through a pipe instead.
-    local pipe = io.popen("omarchy-hyprland-reload-guard paused >/dev/null 2>&1 && echo OK")
-    if not pipe then return false end
-    local out = pipe:read("a") or ""
-    pipe:close()
-    return out:find("OK", 1, true) ~= nil
+    local signature = os.getenv("HYPRLAND_INSTANCE_SIGNATURE")
+    if signature and mag.file_exists(GUARD_DIR .. "/" .. signature) then return true end
+    -- Any instance paused: the directory exists only while a pause is on,
+    -- which is also what `omarchy-hyprland-reload-guard paused` answers.
+    return mag.file_exists(GUARD_DIR)
   end
 
   local function reload()

@@ -12,7 +12,20 @@ local FLAG = stub.FLAG_FILE
 local UNLOCK = stub.UNLOCK_FILE
 local FROZEN = stub.FROZEN_FILE
 local TMP = os.getenv("MAG_TEST_TMP")
-local GUARD_PAUSED = TMP .. "/guard-paused"
+local GUARD_DIR = os.getenv("OMARCHY_HYPRLAND_RELOAD_GUARD_STATE_DIR")
+local GUARD_FILE = GUARD_DIR .. "/" .. os.getenv("HYPRLAND_INSTANCE_SIGNATURE")
+local TOGGLES_DIR = os.getenv("XDG_STATE_HOME") .. "/omarchy/toggles/hypr"
+local real_execute, real_popen = os.execute, io.popen
+
+-- What omarchy-hyprland-reload-guard pause / resume leave on disk.
+local function pause_guard()
+  real_execute("mkdir -p " .. GUARD_DIR)
+  stub.write_file(GUARD_FILE, "")
+end
+local function resume_guard()
+  os.remove(GUARD_FILE)
+  real_execute("rmdir " .. GUARD_DIR)
+end
 
 local function two_monitors(edp)
   local list = {
@@ -197,27 +210,83 @@ stub.eq(reloads(S), 0, "mouse_lock = false with no flag does not reload")
 stub.eq(mag.lock.set("status"), "locked", "mouse_lock = false still answers status for the CLI")
 
 -- Reload guard: while Omarchy pauses reloads, sync does nothing.
-stub.write_file(GUARD_PAUSED, "")
+pause_guard()
 S, mag = fresh(nil)
 S:fire_timers({ type = "oneshot" })
 stub.check(not stub.exists(FLAG), "while the reload guard is paused no flag is written")
 stub.eq(reloads(S), 0, "while the reload guard is paused nothing reloads")
-stub.remove(GUARD_PAUSED)
+resume_guard()
 mag.lock.sync()
 stub.check(stub.exists(FLAG), "once the guard resumes the next sync writes the flag")
 
--- Kept last: the same check as Hyprland runs it. Inside the compositor
--- os.execute() returns nil, "No child processes", 10 for every command
--- (Hyprland reaps its children; see Omarchy's helpers.lua o.shell_succeeds),
--- so `os.execute(...) == true` in lock.lua reload_paused() can never be
--- true and the guard is silently ignored. This fails until reload_paused()
--- reads a marker from io.popen instead.
+-- Another instance paused (the directory exists, our own file does not)
+-- counts as paused, the same answer `omarchy-hyprland-reload-guard paused` gives.
+real_execute("mkdir -p " .. GUARD_DIR)
+stub.write_file(GUARD_DIR .. "/other-instance", "")
+S, mag = fresh(nil)
+S:fire_timers({ type = "oneshot" })
+stub.eq(reloads(S), 0, "a pause recorded for another instance is honoured too")
+os.remove(GUARD_DIR .. "/other-instance")
+real_execute("rmdir " .. GUARD_DIR)
+
+-- Hyprland reaps its own children, so inside the compositor os.execute()
+-- returns nil, "No child processes", 10 for every command. The guard must
+-- not depend on an exit status.
 stub.emulate_child_reaping()
-stub.write_file(GUARD_PAUSED, "")
+pause_guard()
 S, mag = fresh(nil)
 S:fire_timers({ type = "oneshot" })
 stub.eq(reloads(S), 0, "the reload guard is honoured when the compositor reaps children (os.execute has no exit status)")
-stub.remove(GUARD_PAUSED)
+resume_guard()
+os.execute = real_execute
+
+-- Report 002: sync() runs inside hl.timer callbacks with a 50 ms budget, so
+-- it must not start a process. With the toggles directory in place (it is on
+-- every Omarchy install) a sync that writes the flag, one that finds the
+-- layout matching, and one that is paused by the guard all run with
+-- io.popen and os.execute unavailable.
+real_execute("mkdir -p " .. TOGGLES_DIR)
+local function forbid_subprocesses()
+  io.popen = function(cmd) error("io.popen called inside sync: " .. tostring(cmd), 2) end
+  os.execute = function(cmd) error("os.execute called inside sync: " .. tostring(cmd), 2) end
+end
+local function allow_subprocesses()
+  io.popen, os.execute = real_popen, real_execute
+end
+forbid_subprocesses()
+S, mag = fresh(nil)
+local ok, err = pcall(function() S:fire_timers({ type = "oneshot", timeout = 50 }) end)
+stub.check(ok, "a sync that writes the flag starts no process", err)
+stub.check(stub.exists(FLAG), "that sync still writes the flag")
+stub.eq(reloads(S), 1, "that sync still reloads once")
+S.monitors[1].x = 22560
+ok, err = pcall(function() mag.lock.sync() end)
+stub.check(ok, "a sync with a matching layout starts no process", err)
+allow_subprocesses()
+pause_guard()
+forbid_subprocesses()
+S, mag = fresh(nil)
+ok, err = pcall(function() S:fire_timers({ type = "oneshot" }) end)
+stub.check(ok, "a sync paused by the reload guard starts no process", err)
+stub.eq(reloads(S), 0, "and it reloads nothing")
+allow_subprocesses()
+resume_guard()
+
+-- Without the toggles directory the one remaining mkdir runs, once.
+real_execute("rm -rf " .. TOGGLES_DIR)
+local mkdirs = 0
+os.execute = function(cmd)
+  if cmd and cmd:find("mkdir", 1, true) then mkdirs = mkdirs + 1 end
+  return real_execute(cmd)
+end
+S, mag = fresh(nil)
+S:fire_timers({ type = "oneshot", timeout = 50 })
+stub.check(stub.exists(FLAG), "a missing toggles directory is created and the flag written")
+stub.eq(mkdirs, 1, "the directory is created with one mkdir")
+S.monitors[1].x = 22560
+mag.lock.sync()
+stub.eq(mkdirs, 1, "a later sync does not run mkdir again")
+os.execute = real_execute
 LUA
 }
 
