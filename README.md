@@ -239,6 +239,10 @@ If the mouse stays locked after you turned the lock off, remove the rule file an
 rm -f ~/.local/state/omarchy/toggles/hypr/magnifier-mouse-lock.lua; hyprctl reload
 ```
 
+A yellow "Runtime error in lua" banner never appears in `hyprctl configerrors`; its text is only in
+`$XDG_RUNTIME_DIR/hypr/*/hyprland.log`, which a reboot deletes. Save the log and `hyprctl configerrors`
+before rebooting; the steps and the open reports are in [`docs/bug-reports/`](docs/bug-reports/README.md).
+
 ## Removal
 
 Two steps, the reverse of the install:

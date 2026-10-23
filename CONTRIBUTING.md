@@ -11,6 +11,9 @@ Open an issue on GitHub with:
 - the `omarchy_magnifier` block from your `hyprland.lua`,
 - the output of the troubleshooting commands in the README's "Something does not work" section.
 
+Reports written up inside the repo, with the steps for saving Hyprland's log and `hyprctl configerrors`
+before a reboot wipes them, live in [docs/bug-reports/](docs/bug-reports/README.md).
+
 ## Running from a checkout
 
 The plugin is loaded from wherever its folder lives, so a development checkout can replace the marketplace copy without any build step.
