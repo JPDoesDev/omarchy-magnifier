@@ -1,5 +1,7 @@
 # 005: "Desktop buckets: the Magnifier plugin is not loaded" on 2026-10-11
 
+GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/5
+
 Filed 2026-10-23. Status: needs confirming closed.
 
 ## Evidence
