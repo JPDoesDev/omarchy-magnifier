@@ -41,6 +41,12 @@ local DEFAULTS = {
   mouse_lock = true, -- keep the pointer on one monitor until a jump (2+ monitors)
   lock_gap = 20000, -- logical pixels between monitors while locked
 
+  -- Deliver every wheel notch to the binds (sets Hyprland's binds:scroll_event_delay
+  -- to 0 while a wheel chord is bound). With the default 300 ms delay, a notch that
+  -- follows another one quickly skips the binds and reaches the focused window with
+  -- CTRL still held, so a fast CTRL + ALT + scroll also zooms a browser page.
+  wheel_every_notch = true,
+
   -- Set any key to false to leave it unbound.
   keys = {
     zoom_in = "CTRL + ALT + mouse_up",
@@ -190,6 +196,20 @@ for _, name in ipairs({ "screenfx", "magnifier", "jump", "lock" }) do
     -- One broken module must not take the rest of hyprland.lua down with it.
     mag.notify("Magnifier plugin: " .. name .. ".lua failed to load: " .. tostring(err))
   end
+end
+
+-- Hyprland throttles wheel binds: a notch arriving within binds:scroll_event_delay
+-- of the previous one is not matched against any bind and is passed to the
+-- focused window with the modifiers still held (CKeybindManager::onAxisEvent,
+-- 0.56.2). A browser then sees CTRL + wheel and zooms the page. Delivering every
+-- notch to the binds stops that; it also makes Omarchy's own SUPER + scroll
+-- binds fire on every notch instead of at most every 300 ms.
+local function uses_wheel(chord)
+  return type(chord) == "string" and (chord:find("mouse_up", 1, true) or chord:find("mouse_down", 1, true)) ~= nil
+end
+if cfg.wheel_every_notch and (uses_wheel(cfg.keys.zoom_in) or uses_wheel(cfg.keys.zoom_out)
+    or (cfg.jump and (uses_wheel(cfg.keys.jump_next) or uses_wheel(cfg.keys.jump_prev)))) then
+  hl.config({ binds = { scroll_event_delay = 0 } })
 end
 
 return mag

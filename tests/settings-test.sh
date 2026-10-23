@@ -158,6 +158,24 @@ stub.eq(#S:binds_for("Magnifier jump to next monitor"), 0, "keys.jump_next = fal
 stub.eq(S:bind_keys("Magnifier jump to previous monitor"), "SUPER + CTRL + mouse_up", "jump prev stays bound beside a disabled jump next")
 stub.eq(#S:binds_for("Magnifier mouse lock toggle"), 0, "keys.lock_toggle = false leaves the lock chord unbound")
 
+-- Wheel chords and Hyprland's scroll bind throttle (binds:scroll_event_delay).
+S = stub.new()
+S:load(nil)
+stub.eq(S:last_config("binds.scroll_event_delay"), 0, "by default the scroll bind delay is set to 0 (every notch reaches the binds)")
+stub.eq(#S:config_values("binds.scroll_event_delay"), 1, "the scroll bind delay is set once per load")
+S = stub.new()
+S:load({ wheel_every_notch = false })
+stub.eq(S:last_config("binds.scroll_event_delay"), nil, "wheel_every_notch = false leaves the scroll bind delay alone")
+S = stub.new()
+S:load({ keys = { zoom_in = "CTRL + ALT + equal", zoom_out = "CTRL + ALT + minus" }, jump = false })
+stub.eq(S:last_config("binds.scroll_event_delay"), nil, "with no wheel chord bound the scroll bind delay is left alone")
+S = stub.new()
+S:load({ keys = { zoom_in = "CTRL + ALT + equal", zoom_out = "CTRL + ALT + minus" }, jump = true })
+stub.eq(S:last_config("binds.scroll_event_delay"), 0, "the jump wheel chords alone are enough to set the delay")
+S = stub.new()
+S:load({ keys = { zoom_in = false, zoom_out = false, jump_next = false, jump_prev = false } })
+stub.eq(S:last_config("binds.scroll_event_delay"), nil, "every wheel chord disabled leaves the delay alone")
+
 -- With Omarchy's helper loaded, binds go through o.bind so they show up in
 -- the SUPER + K menu; the function dispatcher must pass through untouched.
 local via_o = {}
