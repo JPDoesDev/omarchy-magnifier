@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # omarchy:summary=Control the Magnifier plugin (zoom, monitor jump, mouse lock)
-# omarchy:args=zoom <in|out|toggle|preset|off|set N|status> | invert <on|off|toggle|status> | jump <next|prev> | lock <on|off|toggle|status> | unfreeze
-# omarchy:examples=omarchy-magnifier zoom in | omarchy-magnifier zoom set 3 | omarchy-magnifier lock toggle
+# omarchy:args=zoom <in|out|toggle|preset|off|set N|status> | invert <on|off|toggle|status> | jump <next|prev> | lock <on|off|toggle|status> | unfreeze | status | doctor [DIR]
+# omarchy:examples=omarchy-magnifier zoom in | omarchy-magnifier zoom set 3 | omarchy-magnifier lock toggle | omarchy-magnifier doctor
 
 # Thin CLI over the plugin's Lua API. Hyprland evaluates the call in its config
 # state (hyprctl eval prints only "ok"), so status is read back from Hyprland
@@ -14,6 +14,7 @@ RUNTIME="${XDG_RUNTIME_DIR:-/tmp}"
 UNLOCK_FILE="$RUNTIME/omarchy-magnifier-unlocked"
 FROZEN_FILE="$RUNTIME/omarchy-magnifier-frozen"
 INVERT_FILE="$RUNTIME/omarchy-magnifier-inverted"
+LOCK_FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/toggles/hypr/magnifier-mouse-lock.lua"
 
 usage() {
   cat <<USAGE
@@ -31,6 +32,9 @@ Usage: omarchy-magnifier <command>
   lock status              print locked / unlocked
   unfreeze                 drop every frozen (kept magnified) monitor view
   status                   zoom, lock state and frozen monitors in one go
+  doctor [DIR]             save config errors, Hyprland's log tail, the plugin's
+                           state files and the shell journal into DIR (default:
+                           ~/omarchy-magnifier-doctor-<date>) and print a summary
 USAGE
 }
 
@@ -39,11 +43,13 @@ die() {
   exit 1
 }
 
+# A failed eval stays in `hyprctl configerrors` until the next `hyprctl reload`
+# (Hyprland clears the error list only when an eval succeeds), so say so.
 eval_lua() {
   local result
   result=$(hyprctl eval "$1" 2>&1) || die "Hyprland rejected the call: $result"
   if [[ $result != ok* ]]; then
-    die "$result"
+    die "$result (hyprctl configerrors repeats this until the next hyprctl reload)"
   fi
 }
 
@@ -80,6 +86,45 @@ print_status() {
   else
     echo "frozen monitors: none"
   fi
+}
+
+# Everything a bug report needs, in one folder, before a reboot wipes the
+# Hyprland log. Runtime Lua errors (the yellow banner) are only in that log;
+# `hyprctl configerrors` never lists them.
+doctor() {
+  local out=${1:-$HOME/omarchy-magnifier-doctor-$(date +%Y%m%d-%H%M%S)}
+  local log
+  mkdir -p "$out"
+  {
+    hyprctl version 2>&1 | head -n 1
+    omarchy version 2>/dev/null || true
+  } >"$out/versions.txt"
+  hyprctl configerrors >"$out/configerrors.txt" 2>&1 || true
+  hyprctl -j monitors >"$out/monitors.json" 2>/dev/null || true
+  hyprctl binds >"$out/binds.txt" 2>/dev/null || true
+  print_status >"$out/status.txt" 2>&1 || true
+  cp -- "$RUNTIME"/omarchy-magnifier* "$out/" 2>/dev/null || true
+  [[ -f $LOCK_FLAG ]] && cp -- "$LOCK_FLAG" "$out/"
+  for log in "$RUNTIME"/hypr/*/hyprland.log; do
+    [[ -f $log ]] || continue
+    tail -n 500 "$log" >"$out/hyprland-$(basename "$(dirname "$log")").log"
+  done
+  journalctl --user -b --no-pager -o short-iso 2>/dev/null | grep -iE "omarchy-shell|magnif" >"$out/shell.log" || true
+  cp -- "${XDG_STATE_HOME:-$HOME/.local/state}"/omarchy/notifications/history/*.json "$out/" 2>/dev/null || true
+
+  echo "config errors (hyprctl configerrors):"
+  if grep -q '[^[:space:]]' "$out/configerrors.txt" 2>/dev/null; then
+    sed 's/^/  /' "$out/configerrors.txt"
+  else
+    echo "  none (a yellow 'Runtime error in lua' banner never shows here; see the log lines below)"
+  fi
+  echo "runtime Lua errors in Hyprland's log, this boot (last 20):"
+  if ! cat "$out"/hyprland-*.log 2>/dev/null | grep -iE "runtime error|timed out|error in|\[lua\]" | tail -n 20 | sed 's/^/  /' | grep .; then
+    echo "  none"
+  fi
+  printf 'magnifier binds: %s\n' "$(grep -ci magnifier "$out/binds.txt" 2>/dev/null || echo 0)"
+  cat "$out/status.txt"
+  echo "saved to $out"
 }
 
 (($#)) || { usage; exit 1; }
@@ -123,6 +168,7 @@ case $1 in
     ;;
   unfreeze) eval_lua 'OmarchyMagnifier.unfreeze_all()' ;;
   status) print_status ;;
+  doctor) doctor "${2:-}" ;;
   -h | --help | help) usage ;;
   *) usage; exit 1 ;;
 esac
