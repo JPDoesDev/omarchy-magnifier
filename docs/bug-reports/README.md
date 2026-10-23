@@ -11,6 +11,7 @@ report gets a closing line at the top.
 | [003](003-desktops-rehome-timer-budget.md) | [#3](https://github.com/JPDoesDev/omarchy-magnifier/issues/3) | `desktops.lua` re-homes workspaces inside a 50 ms timer and indexes a monitor that may be gone | desktops module (omarchy-config) | open |
 | [004](004-configerrors-misses-runtime-errors.md) | [#4](https://github.com/JPDoesDev/omarchy-magnifier/issues/4) | `hyprctl configerrors` never shows runtime Lua errors and keeps stale `hyprctl eval` errors | README troubleshooting, `bin/omarchy-magnifier` | open |
 | [005](005-desktop-buckets-plugin-not-loaded.md) | [#5](https://github.com/JPDoesDev/omarchy-magnifier/issues/5) | "Desktop buckets: the Magnifier plugin is not loaded" notification on 2026-10-11 | `~/.config/hypr/hyprland.lua` ordering | needs confirming closed |
+| [006](006-lock-screen-keeps-zoom.md) | [#6](https://github.com/JPDoesDev/omarchy-magnifier/issues/6) | Lock screen comes up at the current zoom and the zoom keys do not work while locked; it should always open at 100% | `hypr/init.lua` (`mag.bind`), `hypr/magnifier.lua`, Omarchy lock hooks | open |
 
 ## Catching the next banner
 
