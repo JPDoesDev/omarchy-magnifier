@@ -23,6 +23,10 @@ RUNTIME="${XDG_RUNTIME_DIR:-/tmp}"
 LOCK_FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/toggles/hypr/magnifier-mouse-lock.lua"
 BEGIN_MARK="-- >>> omarchy-magnifier >>>"
 END_MARK="-- <<< omarchy-magnifier <<<"
+# A module that uses the plugin's Lua API (OmarchyMagnifier) has to be loaded
+# after the block. hyprland.lua runs top to bottom, so the block goes above the
+# first such line when there is one; today that is the desktops module.
+DEPENDENT_LINE='require("hypr.desktops")'
 
 # Written as a HOME-relative expression when the checkout is under HOME, so the
 # config stays portable between machines that share dotfiles.
@@ -73,6 +77,47 @@ has_block() {
   [[ -f $HYPR_MAIN ]] && grep -Fq -- "$BEGIN_MARK" "$HYPR_MAIN"
 }
 
+# Line number of the first dependent require, or nothing.
+dependent_line_no() {
+  grep -nF -- "$DEPENDENT_LINE" "$HYPR_MAIN" 2>/dev/null | head -n 1 | cut -d: -f1
+}
+
+# Append the block, or insert it above the dependent require (and the comment
+# lines directly above that require) when one is already in the file.
+add_block() {
+  local at tmp
+  at=$(dependent_line_no || true)
+  if [[ -z $at ]]; then
+    printf '\n%s\n' "$(config_block)" >>"$HYPR_MAIN"
+    say "added the settings block and loader to $HYPR_MAIN"
+    return 0
+  fi
+  while (( at > 1 )) && [[ $(sed -n "$((at - 1))p" "$HYPR_MAIN") == --* ]]; do
+    at=$((at - 1))
+  done
+  tmp=$(mktemp)
+  {
+    head -n "$((at - 1))" "$HYPR_MAIN"
+    config_block
+    echo
+    tail -n "+$at" "$HYPR_MAIN"
+  } >"$tmp"
+  cat "$tmp" >"$HYPR_MAIN"
+  rm -f "$tmp"
+  say "added the settings block and loader to $HYPR_MAIN above $DEPENDENT_LINE (that module needs the plugin loaded first)"
+}
+
+# Warn when an existing block sits below the dependent require.
+check_block_order() {
+  local at block
+  at=$(dependent_line_no || true)
+  [[ -n $at ]] || return 0
+  block=$(grep -nF -- "$BEGIN_MARK" "$HYPR_MAIN" | head -n 1 | cut -d: -f1)
+  if (( block > at )); then
+    say "warning: $DEPENDENT_LINE (line $at) runs before the plugin block (line $block); move the block above it, or that module reports the plugin as not loaded"
+  fi
+}
+
 remove_block() {
   local tmp
   tmp=$(mktemp)
@@ -100,9 +145,9 @@ install() {
 
   if has_block; then
     say "loader already present in $HYPR_MAIN"
+    check_block_order
   else
-    printf '\n%s\n' "$(config_block)" >>"$HYPR_MAIN"
-    say "added the settings block and loader to $HYPR_MAIN"
+    add_block
   fi
 
   # The shell only discovers plugins under ~/.config/omarchy/plugins. A checkout
