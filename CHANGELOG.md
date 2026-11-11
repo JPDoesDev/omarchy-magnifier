@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Documented
 
+- Known limit and bug report 008: Hyprland 0.56.2 switches the zoomed pointer to software drawing once, with a global flag. When the monitor is destroyed and recreated while zoomed (display sleep that drops the DisplayPort link, a KVM switch, a mode change) the new monitor never gets that lock back, so the pointer is drawn small on the hardware plane and clicks land off its tip; zooming out and in does not recover. Workaround: `cursor:no_hardware_cursors = 1` in the Hyprland config.
 - README troubleshooting: the yellow "Runtime error in lua" banner is never in `hyprctl configerrors`, where its text actually is, and the stale eval errors (#4). New known limit for `wheel_every_notch`.
 - README known limit "GPU and battery while frozen" now names the `debug:damage_tracking` switch.
 

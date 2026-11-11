@@ -13,6 +13,7 @@ report gets a closing line at the top.
 | [005](005-desktop-buckets-plugin-not-loaded.md) | [#5](https://github.com/JPDoesDev/omarchy-magnifier/issues/5) | "Desktop buckets: the Magnifier plugin is not loaded" notification on 2026-10-11 | `~/.config/hypr/hyprland.lua` ordering | fixed 2026-10-23, unreleased; close on release |
 | [006](006-lock-screen-keeps-zoom.md) | [#6](https://github.com/JPDoesDev/omarchy-magnifier/issues/6) | Lock screen comes up at the current zoom and the zoom keys do not work while locked; it should always open at 100% | `hypr/init.lua` (`mag.bind`), `hypr/magnifier.lua`, Omarchy lock hooks | open |
 | [007](007-ctrl-alt-scroll-leaks-to-browser.md) | [#7](https://github.com/JPDoesDev/omarchy-magnifier/issues/7) | `Ctrl + Alt + scroll` in a browser also zooms the page: wheel notches inside `binds:scroll_event_delay` leak to the window with Ctrl held | Hyprland `onAxisEvent` throttle; `hypr/magnifier.lua` wheel binds, README troubleshooting | fixed 2026-10-23 (`wheel_every_notch`), unreleased; upstream report to file |
+| [008](008-hardware-cursor-after-monitor-reconnect.md) | to file | After the monitor sleeps or re-trains its link while zoomed, Hyprland keeps the pointer on the hardware plane: small pointer, clicks off its tip, zoom out and in does not recover | Hyprland `renderMonitor` zoom lock (`static bool zoomLock`); `~/.config/hypr/looknfeel.lua` | worked around 2026-11-10 (`cursor:no_hardware_cursors = 1`); upstream report to file |
 
 ## Catching the next banner
 
