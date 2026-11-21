@@ -159,6 +159,7 @@ function M.new()
       ["cursor.zoom_factor"] = 1,
       ["cursor.zoom_rigid"] = false,
       ["decoration.screen_shader"] = "",
+      ["debug.damage_tracking"] = 2,
     },
     monitors = {},
     cursor = { x = 0, y = 0 },

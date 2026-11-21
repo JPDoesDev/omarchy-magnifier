@@ -19,9 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `install.sh` inserts the settings block above an existing `require("hypr.desktops")` line instead of appending it after, and warns when an existing block sits below that line, since that module needs the plugin loaded first (#5).
 - The command line tool says that a failed `hyprctl eval` stays in `hyprctl configerrors` until the next reload (#4).
 
+### Fixed
+
+- No more red "Screen shader: Screen shader uses uniform 'time', which requires debug:damage_tracking to be switched off" banner while a monitor is frozen. The generated shader referenced `time` to keep Hyprland redrawing, which Hyprland (0.50 through 0.56.2 at least) answers with that banner on every shader install and after every reload, and which never forced redraws in the first place (only damage does). The shader no longer references `time`; instead `debug:damage_tracking` is set to 0 while any view is frozen, which is what the banner asks for and what keeps the frozen view updating, and put back to the value it had when the last view goes. A value the user already set to 0 is left alone. Found on 2026-11-03.
+
 ### Documented
 
 - README troubleshooting: the yellow "Runtime error in lua" banner is never in `hyprctl configerrors`, where its text actually is, and the stale eval errors (#4). New known limit for `wheel_every_notch`.
+- README known limit "GPU and battery while frozen" now names the `debug:damage_tracking` switch.
 
 ## [1.1.0] - 2026-10-11
 
