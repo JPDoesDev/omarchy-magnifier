@@ -6,7 +6,7 @@ report gets a closing line at the top.
 
 | # | Issue | Title | Where | Status |
 |---|---|---|---|---|
-| [001](001-hyprland-banners-cleared-by-reboot.md) | [#1](https://github.com/JPDoesDev/omarchy-magnifier/issues/1) | Hyprland banners near the top of the screen, cleared by a reboot | both machines | open: cause not captured |
+| [001](001-hyprland-banners-cleared-by-reboot.md) | [#1](https://github.com/JPDoesDev/omarchy-magnifier/issues/1) | Hyprland banners near the top of the screen, cleared by a reboot | both machines | closed 2026-11-20: the shader `time` banner, fixed 2026-11-20, unreleased |
 | [002](002-lua-watchdog-budgets.md) | [#2](https://github.com/JPDoesDev/omarchy-magnifier/issues/2) | Plugin callbacks run subprocesses and shader rebuilds inside Hyprland's 50 to 100 ms Lua watchdog | `hypr/lock.lua`, `hypr/jump.lua`, `hypr/screenfx.lua` | closed 2026-11-20: fixed 2026-10-23, unreleased |
 | [003](003-desktops-rehome-timer-budget.md) | [#3](https://github.com/JPDoesDev/omarchy-magnifier/issues/3) | `desktops.lua` re-homes workspaces inside a 50 ms timer and indexes a monitor that may be gone | desktops module (omarchy-config) | closed 2026-11-20: fixed in master copy, installed live and documented 2026-10-23 |
 | [004](004-configerrors-misses-runtime-errors.md) | [#4](https://github.com/JPDoesDev/omarchy-magnifier/issues/4) | `hyprctl configerrors` never shows runtime Lua errors and keeps stale `hyprctl eval` errors | README troubleshooting, `bin/omarchy-magnifier` | closed 2026-11-20: fixed 2026-10-23, unreleased |

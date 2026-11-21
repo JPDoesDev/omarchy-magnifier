@@ -2,7 +2,9 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/1
 
-Filed 2026-10-23 on the laptop (wy02-yoga, Hyprland 0.56.2, Omarchy). Status: open, root cause not captured.
+Closed 2026-11-20: cause found and fixed (see "Cause" below), issue closed. The fix is on `main` and goes out with the next release. Open a new report if a banner shows up with the fix in place.
+
+Filed 2026-10-23 on the laptop (wy02-yoga, Hyprland 0.56.2, Omarchy). Status: fixed 2026-11-20 (commit 8f51a94), unreleased.
 
 ## Symptom
 
@@ -10,6 +12,44 @@ A few times recently Hyprland showed a banner near the top of the screen. Each
 time a reboot made it go away. The user believes they are tied to the
 magnifier setup (plugin, mouse lock, desktops module, display-mode.sh). The
 banner text was not recorded.
+
+## Cause
+
+Hyprland's red "Screen shader: Screen shader uses uniform 'time', which
+requires debug:damage_tracking to be switched off." banner. From 1.0.0
+(2026-10-10) the frozen-zoom shader declared `uniform float time` whenever a
+monitor was frozen, that is, after every jump away from a magnified monitor on
+a two-monitor desk. It was seen with its text on 2026-11-03.
+
+The banner text of the first sightings was never recorded. This is the one
+banner that fits every observation in this report:
+
+- **Not in `hyprctl configerrors`, not in the log.** Hyprland raises it from
+  the shader compile, outside the config error list and outside Lua. The
+  doctor folder of 2026-11-03 was saved with a frozen view and the `time`
+  shader installed: `configerrors.txt` is empty and the log has no Lua error.
+- **A reload does not cure it, a reboot does.** The frozen views are in
+  `$XDG_RUNTIME_DIR/omarchy-magnifier-frozen`; every reload re-installs the
+  shader from that file and the banner with it. A reboot wipes the file. This
+  is candidate 2 below, with the shader itself as the bad value.
+- **Tied to the magnifier on two monitors.** One monitor never freezes a view.
+
+Checked again on 2026-11-20 on the laptop (Hyprland 0.56.2), reading the
+banner from the space it reserves at the top of the monitor (`reserved` in
+`hyprctl -j monitors`):
+
+| Shader installed | `reserved` top | `hyprctl configerrors` |
+|---|---|---|
+| none | 0 | empty |
+| a shader that only declares and reads `time` | 60 | empty |
+| after `hyprctl reload` with that shader gone | 0 | empty |
+| the plugin's current shader with a frozen view (no `time`, `debug:damage_tracking` 0) | 0 | empty |
+| the same after a second reload | 0 | empty |
+
+The fix (8f51a94, 2026-11-20, unreleased) takes `time` out of the generated
+shader and switches `debug:damage_tracking` off while a view is frozen.
+Candidate 1 below (watchdog timeouts, reports 002 and 003) was fixed on
+2026-10-23 as well; no such banner was ever captured.
 
 ## What was checked on 2026-10-23
 
