@@ -2,6 +2,8 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/5
 
+Closed 2026-11-20: fixed, issue closed. The fix is on `main` and goes out with the next release.
+
 Filed 2026-10-23. Status: fixed 2026-10-23, unreleased. The desktop's `hyprland.lua` has the plugin block above the require (checked); `install.sh` now inserts its block above an existing `require("hypr.desktops")` and warns when an existing block sits below it; the desktops module's guard (which had gone missing from the current master copy, so a wrong order would have raised a nil error in every timer tick instead) is back with a message that says what to do.
 
 ## Evidence

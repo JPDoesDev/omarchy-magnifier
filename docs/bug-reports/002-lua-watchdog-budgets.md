@@ -2,6 +2,8 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/2
 
+Closed 2026-11-20: fixed, issue closed. The fix is on `main` and goes out with the next release.
+
 Filed 2026-10-23. Status: fixed 2026-10-23, unreleased (`lock.lua` reads the reload guard's state directory instead of `io.popen`, creates the toggles directory only when missing; a jump rebuilds the shader once through `screenfx.batch`; tests added in `lock-test.sh` and `jump-test.sh`). Jump timing on the desktop still not measured. Found by reading `src/config/lua/ConfigManager.{hpp,cpp}` at v0.56.2 against `hypr/*.lua`.
 
 ## Facts about Hyprland 0.56.2
