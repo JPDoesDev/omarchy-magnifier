@@ -26,6 +26,8 @@ Every change shows the new zoom percentage in a popup next to the pointer. The p
 
 Omarchy's own `Super + Ctrl + Z` (zoom in) and `Super + Ctrl + Alt + Z` (zoom reset) keep working. The plugin keeps their result inside your limits and remembers it across reloads, like its own keys.
 
+The lock screen always comes up at 100%, and the zoom you had comes back when you unlock. If the lock screen is magnified anyway, `Ctrl + Alt + X`, `Ctrl + Alt + -`, `Ctrl + Alt + Scroll down` and `Ctrl + Alt + I` work there too. The keys that zoom in do not.
+
 Every key can be changed or switched off in the settings. All plugin keys show up in Omarchy's hotkey list (`Super + K`) under "Magnifier".
 
 ## Requirements
@@ -106,6 +108,8 @@ Zoom levels are multipliers: 1 means off, 3 means 300%.
 | `jump` | `true` | `Super + Ctrl + scroll` hops between monitors with per-monitor memory. |
 | `mouse_lock` | `true` | Keep the pointer on one monitor until a jump (two or more monitors). |
 | `lock_gap` | `20000` | Logical pixels placed between monitors while locked. |
+| `lock_screen_reset` | `true` | The lock screen comes up at 100% with no frozen view, whatever the zoom was. Colour inversion stays. Set `false` to leave the lock screen magnified like everything else. |
+| `restore_after_unlock` | `true` | After you unlock, the zoom and the frozen views from before the lock come back. Set `false` to stay at 100% and drop the frozen views. |
 | `wheel_every_notch` | `true` | Set Hyprland's `binds:scroll_event_delay` to 0 while a wheel chord is bound, so every notch reaches the magnifier. With Hyprland's default 300 ms delay a quick `Ctrl + Alt + scroll` sends the extra notches to the focused window with `Ctrl` held, which zooms a browser page. Side effect: Omarchy's own `Super + scroll` binds fire on every notch too. Set `false` to leave the delay alone. |
 | `keys.zoom_in` | `"CTRL + ALT + mouse_up"` | Zoom in. Set to `false` to leave it unbound. |
 | `keys.zoom_out` | `"CTRL + ALT + mouse_down"` | Zoom out. |
@@ -193,6 +197,7 @@ The same functions are reachable from any Hyprland Lua file through the `Omarchy
 
 - **One screen shader.** Frozen zoom and colour inversion share Hyprland's single screen-shader slot, generated into one shader so they work together. When a shader from somewhere else is active, for example a per-window inversion plugin, both are skipped and that shader is left alone. You get one notification about it. Jump and mouse lock still work; the monitor you leave simply drops to 100%.
 - **GPU and battery while frozen.** While any monitor is frozen the plugin sets Hyprland's `debug:damage_tracking` to 0, so every monitor is redrawn in full on every refresh and the frozen view keeps updating. That costs GPU time and battery. The setting goes back to the value it had as soon as nothing is frozen. (Hyprland redraws only the changed region otherwise, which a magnified view maps to the wrong place; this is also why the shader must not use Hyprland's `time` uniform: that brings up a red "Screen shader uses uniform 'time'" banner that stays until the next reload.)
+- **The lock screen can show magnified for a moment.** Hyprland and Omarchy do not announce a session lock, so the plugin watches for it from the shell and zooms out when it sees one. That takes a fraction of a second after the lock screen appears; when the screen was locked with no window focused it can take up to two seconds. After the unlock the zoom is back within a quarter of a second.
 - **Reboot clears the memory.** Zoom, per-monitor memory and frozen views survive a Hyprland reload but are gone after a reboot.
 - **Scale pills un-gap the layout.** Changing a monitor's SCALE in Omarchy's display panel applies a live rule with `position = "auto"`. That removes the gap between monitors until the next sync, so the mouse can cross. Press `Super + Ctrl + M` twice to lock again right away.
 - **Direction keys find no neighbour while locked.** Hyprland's `l`/`r`/`u`/`d` monitor dispatchers (`focusmonitor`, `movecurrentworkspacetomonitor`, `movewindow mon:`) only accept a monitor whose edge touches the current one. With the lock gap between the monitors they find nothing, so Omarchy's `Super + Shift + Alt + arrows` (move workspace to the left or right monitor) do nothing while locked. Use the plugin's jump keys or `omarchy-magnifier jump next`, or rebind those arrows to a helper that names the target monitor instead of a direction.
@@ -278,6 +283,8 @@ The popup is a shell plugin (`ZoomOsd.qml`, kind `panel`) inside `omarchy-shell`
 Hyprland renders the zoom only on the monitor under the pointer. The jump (`hypr/jump.lua`) records the pointer position and zoom of the monitor you leave, moves focus and pointer to the remembered spot on the target, and restores the target's zoom. To keep the monitor you left magnified, `hypr/screenfx.lua` generates a screen shader that re-creates the same magnified view on that output alone, through the shader's `wl_output` uniform. Colour inversion is one more line in the same generated shader, applied to every output; its on/off flag is `$XDG_RUNTIME_DIR/omarchy-magnifier-inverted`. Frozen views are listed in `$XDG_RUNTIME_DIR/omarchy-magnifier-frozen` and the shader is written to `$XDG_RUNTIME_DIR/omarchy-magnifier.frag`.
 
 Hyprland clamps pointer motion to the nearest monitor edge. The mouse lock (`hypr/lock.lua`) places the monitors far apart in the virtual layout, `lock_gap` logical pixels by default and always under Xwayland's coordinate limit, so no mouse movement can reach the other monitor. The gapped layout is written as monitor rules to `~/.local/state/omarchy/toggles/hypr/magnifier-mouse-lock.lua`, which Omarchy loads after your own `monitors.lua`. Each rule keeps the monitor's current mode, scale and rotation; only the position changes. Unlocking removes the file. The unlocked flag is `$XDG_RUNTIME_DIR/omarchy-magnifier-unlocked`.
+
+The lock screen is a surface like any other to Hyprland, so it would be magnified too, and Hyprland 0.56 has no event for a session lock. The shell half of the plugin (`ZoomOsd.qml`) therefore watches Hyprland's monitor list, where a lock shows as `LOCK` in `solitaryBlockedBy`, and reports each change with `hyprctl eval 'OmarchyMagnifier.screen_lock(true)'`. `hypr/screenlock.lua` writes the zoom to `$XDG_RUNTIME_DIR/omarchy-magnifier-screen-locked`, sets the zoom to 1 and takes the frozen views out of the shader; the unlock reverses that. `omarchy-shell magnifier lock` prints what the watch last saw. The zoom-out, zoom-off and invert keys are bound with Hyprland's `locked` option, so they work at the lock screen.
 
 The whole Hyprland side is loaded with one `dofile(...)` line rather than `require`. The plugin id contains a dot, which Lua's module path would turn into a directory separator, and `dofile` is never cached, so every `hyprctl reload` re-evaluates the plugin like the rest of your config.
 

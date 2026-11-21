@@ -156,7 +156,9 @@ return function(mag)
       batch_dirty = true
       return
     end
-    local frozen = read_frozen()
+    -- Under the lock screen the frozen views stay on file but out of the
+    -- shader, so the lock screen is not magnified; inversion stays.
+    local frozen = mag.screen_locked() and {} or read_frozen()
     local invert = inverted()
     local any_frozen = next(frozen) ~= nil
     if not slot_available() then return end
@@ -236,7 +238,7 @@ return function(mag)
   mag.api.batch = M.batch -- for modules that chain leave_monitor / enter_monitor
 
   if cfg.invert then
-    mag.bind(cfg.keys.invert, "Magnifier invert colours", function() M.set_invert("toggle") end)
+    mag.bind(cfg.keys.invert, "Magnifier invert colours", function() M.set_invert("toggle") end, mag.AT_LOCK_SCREEN)
   elseif inverted() then
     -- Feature switched off while the flag is set: drop the inversion.
     os.remove(INVERT_FLAG)

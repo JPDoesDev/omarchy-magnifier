@@ -203,5 +203,24 @@ eq(M.zoomLabel(1.5), "150%", "zoomLabel 1.5 -> 150%")
 eq(M.zoomLabel(2.345), "235%", "zoomLabel rounds")
 eq(M.zoomLabel("nope"), "100%", "zoomLabel of garbage -> 100%")
 
+// ---------------------------------------------------------------- session lock
+
+var free = { name: "DP-1", solitaryBlockedBy: ["WINDOWED", "CANDIDATE"] }
+var locked = { name: "DP-1", solitaryBlockedBy: ["LOCK", "WINDOWED"] }
+var noWorkspace = { name: "DP-2", solitaryBlockedBy: ["WORKSPACE"] }
+eq(M.sessionLockState([free]), false, "sessionLockState: a readable monitor without LOCK -> false")
+eq(M.sessionLockState([locked]), true, "sessionLockState: LOCK on the monitor -> true")
+eq(M.sessionLockState([free, locked]), true, "sessionLockState: LOCK on any monitor -> true")
+eq(M.sessionLockState([noWorkspace]), null, "sessionLockState: only a monitor with no workspace -> null")
+eq(M.sessionLockState([noWorkspace, free]), false, "sessionLockState: one readable monitor is enough for false")
+eq(M.sessionLockState([{ name: "DP-1", solitaryBlockedBy: null }]), false, "sessionLockState: no reasons at all -> false")
+eq(M.sessionLockState([{ name: "DP-1" }]), false, "sessionLockState: reasons missing on a named monitor -> false")
+eq(M.sessionLockState([{}]), null, "sessionLockState: an object not filled in yet -> null")
+eq(M.sessionLockState([]), null, "sessionLockState: no monitors -> null")
+eq(M.sessionLockState(null), null, "sessionLockState: null -> null")
+eq(M.sessionLockState("junk"), null, "sessionLockState: a string of junk -> null")
+eq(M.screenLockCall(true), "if OmarchyMagnifier and OmarchyMagnifier.screen_lock then OmarchyMagnifier.screen_lock(true) end", "screenLockCall(true) is guarded")
+ok(M.screenLockCall(false).indexOf("screen_lock(false)") !== -1, "screenLockCall(false) passes false")
+
 console.log("# all zoom OSD model tests passed")
 EOF

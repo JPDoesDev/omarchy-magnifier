@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- The lock screen comes up at 100% and the zoom comes back after the unlock (#6). The shell half of the plugin watches Hyprland for a session lock (Hyprland 0.56 has no lock event and Omarchy no lock hook) and calls the new `OmarchyMagnifier.screen_lock(true | false)`; frozen views leave the screen shader while locked, colour inversion stays. New settings `lock_screen_reset` (default `true`) and `restore_after_unlock` (default `true`). `omarchy-shell magnifier lock` prints the state of the watch.
+- Zoom out, zoom off and invert work at the lock screen: their binds carry Hyprland's `locked` option (#6). The keys that zoom in stay off there.
 - `wheel_every_notch` (default `true`): sets Hyprland's `binds:scroll_event_delay` to 0 while a wheel chord is bound. With the default 300 ms delay, wheel notches arriving within the delay skip the binds and reach the focused window with `Ctrl` still held, so a quick `Ctrl + Alt + scroll` also zoomed a browser page (#7). Side effect: Omarchy's `Super + scroll` binds now fire on every notch.
 - `omarchy-magnifier doctor [DIR]`: saves `hyprctl configerrors`, the tail of Hyprland's log, the plugin's runtime files, the mouse lock rule file and the magnifier lines of the shell journal into one folder and prints a summary, before a reboot wipes the log (#4).
 - `OmarchyMagnifier.batch(fn)`: runs `fn` with the screen shader rebuilt once at the end, for modules that chain `leave_monitor` and `enter_monitor`.

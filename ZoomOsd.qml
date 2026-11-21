@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons as Commons
@@ -111,6 +112,100 @@ Item {
     function show(payloadJson: string): string { root.show(payloadJson); return "ok" }
     function close(): string { root.close(); return "ok" }
     function ping(): string { return "ok" }
+    // What the lock screen watch last saw and what Hyprland was told.
+    function lock(): string {
+      return JSON.stringify({ known: root.lockKnown, locked: root.sessionLocked, delivered: root.lockDelivered })
+    }
+  }
+
+  // ---- Lock screen watch -------------------------------------------------
+  //
+  // The lock screen has to come up at 100%, and neither Hyprland (0.56.2) nor
+  // Omarchy tells anyone that the session locked. This half of the plugin
+  // lives in the shell, where a query costs nothing that matters, so it
+  // watches Hyprland's monitor list for the lock (see sessionLockState in the
+  // model) and passes each change to the Hyprland half, which owns the zoom:
+  // OmarchyMagnifier.screen_lock(true | false) in hypr/screenlock.lua.
+  //
+  // Hyprland drops the focus when a lock starts, which shows as an
+  // `activewindowv2` event; that event asks for a fresh monitor list at once.
+  // The slow poll covers a lock that started with nothing focused. Nothing
+  // announces the unlock, so the poll runs fast while locked.
+  property bool lockKnown: false
+  property bool sessionLocked: false
+  // "true" / "false" once Hyprland has taken that state, "" before.
+  property string lockDelivered: ""
+
+  function refreshLock() {
+    Hyprland.refreshMonitors()
+  }
+
+  function evaluateLock() {
+    var monitors = Hyprland.monitors.values
+    var objects = []
+    for (var i = 0; i < monitors.length; i++) objects.push(monitors[i].lastIpcObject)
+    var state = ZoomOsdModel.sessionLockState(objects)
+    if (state === null) return
+    if (!lockKnown || state !== sessionLocked) {
+      lockKnown = true
+      sessionLocked = state
+    }
+    deliverLock()
+  }
+
+  function deliverLock() {
+    if (!lockKnown || lockProc.running) return
+    var want = sessionLocked ? "true" : "false"
+    if (want === lockDelivered) return
+    lockProc.sending = want
+    lockProc.command = ["hyprctl", "eval", ZoomOsdModel.screenLockCall(sessionLocked)]
+    lockProc.running = true
+  }
+
+  Process {
+    id: lockProc
+    property string sending: ""
+    onExited: function(exitCode) {
+      // A failed call is tried again by the next poll, not in a tight loop.
+      if (exitCode !== 0) return
+      root.lockDelivered = sending
+      root.deliverLock()
+    }
+  }
+
+  Connections {
+    target: Hyprland
+    function onRawEvent(event) {
+      if (event.name !== "activewindowv2") return
+      root.refreshLock()
+      lockRecheck.restart()
+    }
+  }
+
+  Instantiator {
+    model: Hyprland.monitors
+    delegate: Connections {
+      required property var modelData
+      target: modelData
+      function onLastIpcObjectChanged() { root.evaluateLock() }
+    }
+  }
+
+  // The focus can drop a moment before the lock is in the monitor list.
+  Timer {
+    id: lockRecheck
+    interval: 150
+    onTriggered: root.refreshLock()
+  }
+
+  Timer {
+    interval: root.sessionLocked ? 250 : 2000
+    running: true
+    repeat: true
+    onTriggered: {
+      root.evaluateLock()
+      root.refreshLock()
+    }
   }
 
   // Monospace bold so the digits keep their width as the zoom changes; the

@@ -41,6 +41,9 @@ local DEFAULTS = {
   mouse_lock = true, -- keep the pointer on one monitor until a jump (2+ monitors)
   lock_gap = 20000, -- logical pixels between monitors while locked
 
+  lock_screen_reset = true, -- the lock screen always comes up at 100%, with no frozen view
+  restore_after_unlock = true, -- after the unlock, put the zoom and the frozen views back
+
   -- Deliver every wheel notch to the binds (sets Hyprland's binds:scroll_event_delay
   -- to 0 while a wheel chord is bound). With the default 300 ms delay, a notch that
   -- follows another one quickly skips the binds and reaches the focused window with
@@ -167,26 +170,46 @@ function mag.file_exists(path)
   return false
 end
 
+-- True while the session lock is up and the magnifier stands aside for it
+-- (screenlock.lua writes and removes the flag). Defined here because screenfx
+-- and magnifier, which load first, both ask.
+mag.SCREEN_LOCK_FLAG = mag.runtime .. "/omarchy-magnifier-screen-locked"
+function mag.screen_locked()
+  return mag.file_exists(mag.SCREEN_LOCK_FLAG)
+end
+
 function mag.notify(message)
   hl.exec_cmd("omarchy-notification-send " .. mag.shell_quote(message))
 end
 
 -- Bind through Omarchy's helper when it is loaded (so the key shows in the
 -- SUPER + K menu with its description), else straight through Hyprland.
-function mag.bind(keys, description, fn)
+-- `options` are Hyprland's bind options; the table is copied because Omarchy's
+-- helper writes the description into it.
+function mag.bind(keys, description, fn, options)
   if not keys then return end
+  local opts = {}
+  for k, v in pairs(options or {}) do opts[k] = v end
   if type(o) == "table" and o.bind then
-    o.bind(keys, description, fn)
+    o.bind(keys, description, fn, opts)
   else
-    hl.bind(keys, fn, { description = description })
+    opts.description = description
+    hl.bind(keys, fn, opts)
   end
 end
+
+-- Hyprland drops every bind without `locked` while a session lock is up. The
+-- keys that take magnification away (zoom out, zoom off) and colour inversion
+-- carry it, so a lock screen that came up magnified can be put right without
+-- typing the password blind. The keys that zoom in do not: nothing should
+-- magnify the lock screen further.
+mag.AT_LOCK_SCREEN = { locked = true }
 
 -- Public API for scripts and the CLI: hyprctl eval 'OmarchyMagnifier.zoom_in()'
 OmarchyMagnifier = {}
 mag.api = OmarchyMagnifier
 
-for _, name in ipairs({ "screenfx", "magnifier", "jump", "lock" }) do
+for _, name in ipairs({ "screenfx", "magnifier", "jump", "lock", "screenlock" }) do
   local chunk, err = loadfile(dir .. "/" .. name .. ".lua")
   local ok = false
   if chunk then

@@ -151,6 +151,38 @@ function zoomLabel(zoom) {
   return Math.round(effectiveZoom(zoom) * 100) + "%"
 }
 
+// Session lock, read from the objects of `hyprctl -j monitors`. Hyprland has no
+// lock query, but an active ext-session-lock is one of the reasons a monitor
+// cannot go solitary: "LOCK" in solitaryBlockedBy. On a monitor with no
+// workspace yet Hyprland stops at the first reason ("WORKSPACE") and never
+// reaches the lock, so such a monitor says nothing. Returns true (locked),
+// false (not locked) or null (cannot tell: keep the last answer).
+function sessionLockState(monitors) {
+  if (!monitors || typeof monitors.length !== "number") return null
+  var readable = false
+  for (var i = 0; i < monitors.length; i++) {
+    var m = monitors[i]
+    // An object Hyprland has not filled in yet has no name.
+    if (!m || typeof m.name !== "string" || m.name === "") continue
+    var reasons = m.solitaryBlockedBy
+    if (!reasons || typeof reasons.length !== "number") reasons = []
+    var workspace = false
+    for (var j = 0; j < reasons.length; j++) {
+      if (reasons[j] === "LOCK") return true
+      if (reasons[j] === "WORKSPACE") workspace = true
+    }
+    if (!workspace) readable = true
+  }
+  return readable ? false : null
+}
+
+// The Lua call that tells the Hyprland side about the lock. Guarded, so a
+// shell plugin without the Hyprland half installed leaves no eval error behind.
+function screenLockCall(locked) {
+  return "if OmarchyMagnifier and OmarchyMagnifier.screen_lock then OmarchyMagnifier.screen_lock("
+    + (locked ? "true" : "false") + ") end"
+}
+
 if (typeof module !== "undefined") {
   module.exports = {
     defaults: defaults,
@@ -161,6 +193,8 @@ if (typeof module !== "undefined") {
     cardScale: cardScale,
     onScreenScale: onScreenScale,
     cardPlacement: cardPlacement,
-    zoomLabel: zoomLabel
+    zoomLabel: zoomLabel,
+    sessionLockState: sessionLockState,
+    screenLockCall: screenLockCall
   }
 }

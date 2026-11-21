@@ -190,7 +190,42 @@ stub.eq(#S.calls.bind, 0, "with o.bind present, hl.bind is not called directly")
 stub.eq(#via_o, 10, "with o.bind present, all ten binds go through it")
 stub.check(type(via_o[1].dispatcher) == "function" and type(via_o[1].description) == "string",
   "o.bind receives (keys, description, function)")
+-- Omarchy's helper writes the description into the options table it gets, so
+-- every bind must hand it a table of its own.
+local seen, shared = {}, false
+for _, b in ipairs(via_o) do
+  if type(b.options) ~= "table" or seen[b.options] then shared = true end
+  seen[b.options or false] = true
+end
+stub.check(not shared, "each o.bind call gets its own options table")
+local locked_via_o = {}
+for _, b in ipairs(via_o) do
+  if b.options and b.options.locked then locked_via_o[#locked_via_o + 1] = b.description end
+end
+table.sort(locked_via_o)
+stub.eq(table.concat(locked_via_o, "|"),
+  "Magnifier invert colours|Magnifier zoom off|Magnifier zoom out|Magnifier zoom out (key)",
+  "through o.bind, the locked option reaches the same four binds")
 _G.o = nil
+
+-- Binds that work at the lock screen (Hyprland drops a bind without `locked`
+-- while a session lock is up): the keys that take magnification away, and
+-- invert. Nothing that zooms in, jumps or moves the mouse lock.
+S = stub.new()
+S:load({ side_buttons = true })
+local at_lock = {}
+for _, b in ipairs(S.calls.bind) do
+  if b.opts.locked then at_lock[#at_lock + 1] = b.description end
+end
+table.sort(at_lock)
+stub.eq(table.concat(at_lock, "|"),
+  "Magnifier invert colours|Magnifier zoom off|Magnifier zoom off (side button)|Magnifier zoom out|Magnifier zoom out (key)",
+  "only zoom out, zoom off and invert are bound with locked = true")
+for _, d in ipairs({ "Magnifier zoom in", "Magnifier zoom in (key)", "Magnifier zoom to preset",
+    "Magnifier zoom to preset (side button)", "Magnifier jump to next monitor", "Magnifier mouse lock toggle" }) do
+  local b = S:binds_for(d)[1]
+  stub.check(b ~= nil and not b.opts.locked, d .. " is not bound at the lock screen")
+end
 
 -- A settings table must never break loading.
 S = stub.new()

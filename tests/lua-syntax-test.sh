@@ -13,7 +13,7 @@ for file in "${files[@]}"; do
   pass "$(basename "$file") compiles with luac -p"
 done
 
-for name in init magnifier jump screenfx lock; do
+for name in init magnifier jump screenfx lock screenlock; do
   [[ -f $ROOT/hypr/$name.lua ]] || fail "hypr/$name.lua exists"
 done
-pass "all five plugin modules are present"
+pass "all six plugin modules are present"

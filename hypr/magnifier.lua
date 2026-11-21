@@ -94,14 +94,14 @@ return function(mag)
   mag.api.zoom_set = function(z) return mag.set_zoom(z) end
 
   mag.bind(cfg.keys.zoom_in, "Magnifier zoom in", mag.zoom_in)
-  mag.bind(cfg.keys.zoom_out, "Magnifier zoom out", mag.zoom_out)
+  mag.bind(cfg.keys.zoom_out, "Magnifier zoom out", mag.zoom_out, mag.AT_LOCK_SCREEN)
   mag.bind(cfg.keys.zoom_in_key, "Magnifier zoom in (key)", mag.zoom_in)
-  mag.bind(cfg.keys.zoom_out_key, "Magnifier zoom out (key)", mag.zoom_out)
+  mag.bind(cfg.keys.zoom_out_key, "Magnifier zoom out (key)", mag.zoom_out, mag.AT_LOCK_SCREEN)
   mag.bind(cfg.keys.preset, "Magnifier zoom to preset", mag.zoom_preset)
-  mag.bind(cfg.keys.off, "Magnifier zoom off", mag.zoom_off)
+  mag.bind(cfg.keys.off, "Magnifier zoom off", mag.zoom_off, mag.AT_LOCK_SCREEN)
   if cfg.side_buttons then
     mag.bind("SUPER + mouse:" .. math.floor(cfg.side_button_in), "Magnifier zoom to preset (side button)", mag.zoom_preset)
-    mag.bind("SUPER + mouse:" .. math.floor(cfg.side_button_out), "Magnifier zoom off (side button)", mag.zoom_off)
+    mag.bind("SUPER + mouse:" .. math.floor(cfg.side_button_out), "Magnifier zoom off (side button)", mag.zoom_off, mag.AT_LOCK_SCREEN)
   end
 
   -- Hold SUPER and pinch on the touchpad. mode = "live" makes Hyprland follow
@@ -120,9 +120,10 @@ return function(mag)
     })
   end
 
-  -- Restore the zoom from before the reload.
+  -- Restore the zoom from before the reload, except under the lock screen,
+  -- which stays at 100% until the unlock puts the zoom back.
   load_state()
-  if saved_zoom and saved_zoom > 1.001 then
+  if saved_zoom and saved_zoom > 1.001 and not mag.screen_locked() then
     hl.config({ cursor = { zoom_factor = mag.clamp(saved_zoom) } })
   end
 
@@ -130,6 +131,7 @@ return function(mag)
   -- script): keep the saved copy current and the limits honoured. Nothing is
   -- written while the value is unchanged.
   hl.timer(function()
+    if mag.screen_locked() then return end -- the lock screen's 100% is not a change to keep
     local zoom = mag.current_zoom()
     if zoom == saved_zoom then return end
     local clamped = mag.clamp(zoom)

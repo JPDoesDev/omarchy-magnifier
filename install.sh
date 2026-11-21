@@ -236,7 +236,8 @@ uninstall() {
   fi
 
   rm -f "$LOCK_FLAG" "$RUNTIME"/omarchy-magnifier-state "$RUNTIME"/omarchy-magnifier-frozen \
-    "$RUNTIME"/omarchy-magnifier.frag "$RUNTIME"/omarchy-magnifier-unlocked
+    "$RUNTIME"/omarchy-magnifier.frag "$RUNTIME"/omarchy-magnifier-unlocked \
+    "$RUNTIME"/omarchy-magnifier-screen-locked
 
   if in_session; then
     if shell_running; then

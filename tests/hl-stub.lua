@@ -28,6 +28,7 @@ M.STATE_HOME = assert(os.getenv("XDG_STATE_HOME"), "XDG_STATE_HOME must point at
 M.STATE_FILE = M.RUNTIME .. "/omarchy-magnifier-state"
 M.FROZEN_FILE = M.RUNTIME .. "/omarchy-magnifier-frozen"
 M.SHADER_FILE = M.RUNTIME .. "/omarchy-magnifier.frag"
+M.SCREEN_LOCK_FLAG = M.RUNTIME .. "/omarchy-magnifier-screen-locked"
 M.UNLOCK_FILE = M.RUNTIME .. "/omarchy-magnifier-unlocked"
 M.INVERT_FILE = M.RUNTIME .. "/omarchy-magnifier-inverted"
 M.FLAG_FILE = M.STATE_HOME .. "/omarchy/toggles/hypr/magnifier-mouse-lock.lua"

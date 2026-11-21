@@ -29,7 +29,7 @@ omarchy_magnifier = {
 }
 ```
 
-Sections 1 to 3, 7 and 8 need one monitor. Section 4 needs a touchpad. Sections 5 and 6 need two monitors.
+Sections 1 to 3, 7, 8 and 10 need one monitor (10.6 needs two). Section 4 needs a touchpad. Sections 5 and 6 need two monitors.
 
 ### 1. Zoom keys and buttons (single monitor is enough)
 
@@ -142,3 +142,17 @@ Sections 1 to 3, 7 and 8 need one monitor. Section 4 needs a touchpad. Sections 
 | 9.5 | `tests/run` in the checkout | every test file passes |
 | 9.6 | `install.sh --uninstall`, then `install.sh` on a `hyprland.lua` that has `require("hypr.desktops")` | the block lands above that line (and above its comment); no "Magnifier plugin is not loaded" notification after the reload |
 | 9.7 | `omarchy-magnifier doctor` | prints config errors (or none), runtime Lua errors from the log (or none), the bind count and the status; the folder it names holds `configerrors.txt`, `hyprland-*.log`, `binds.txt`, `monitors.json` and the state files |
+
+### 10. Lock screen
+
+| # | Do this | Expect |
+|---|---|---|
+| 10.1 | Zoom to the preset, then Super + Ctrl + L | the lock screen is at 100% within a moment of appearing |
+| 10.2 | Unlock | the zoom from before the lock is back, at the same spot, with no popup |
+| 10.3 | At the lock screen: Ctrl + Alt + Z, Ctrl + Alt + = | nothing happens (zoom-in keys are off while locked) |
+| 10.4 | `lock_screen_reset = false`, reload, zoom in, lock, then Ctrl + Alt + X at the lock screen | the lock screen comes up magnified; the key zooms it out |
+| 10.5 | Zoom in and leave the machine until the idle lock fires | the lock screen is at 100% when you come back; unlock restores the zoom |
+| 10.6 | Two monitors: magnify A, jump to B, lock | neither monitor shows a magnified lock screen; after the unlock A is frozen again |
+| 10.7 | Invert, lock | the lock screen is inverted and at 100% |
+| 10.8 | `restore_after_unlock = false`, reload, zoom in, lock, unlock | stays at 100%; `omarchy-magnifier status` shows no frozen monitor |
+| 10.9 | While locked: `omarchy-shell magnifier lock` over ssh; again after the unlock | `"locked":true,"delivered":"true"`, then `"locked":false,"delivered":"false"` |
