@@ -1,6 +1,8 @@
 # 008: After the monitor sleeps, the zoomed pointer is drawn small and clicks land off its tip
 
-GitHub issue: to file (this repo), plus an upstream report against hyprwm/Hyprland.
+GitHub issue: none. This is a Hyprland bug that the plugin cannot repair, so no issue was filed in this repository.
+
+Closed 2026-11-20: worked around with `cursor:no_hardware_cursors = 1`, which the README lists as a known limit. The upstream report against hyprwm/Hyprland (fix option 3 below) is still to file.
 
 Filed 2026-11-10 from the user's own observation (desktop, LG ULTRAGEAR+ 3440x1440 on DP-1, scale 1.25, Hyprland 0.56.2). Status: worked around the same day with `cursor:no_hardware_cursors = 1` in `~/.config/hypr/looknfeel.lua`; upstream fix proposed below.
 
