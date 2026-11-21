@@ -2,9 +2,9 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/7
 
-Closed 2026-11-20: fixed, issue closed. The fix is on `main` and goes out with the next release.
+Closed 2026-11-20: fixed, issue closed. Released in 1.2.0.
 
-Filed 2026-10-23 from the user's own observation (desktop, Razer DeathAdder Essential). Status: fixed 2026-10-23, unreleased with fix option 1: the plugin sets `binds:scroll_event_delay = 0` whenever a wheel chord is bound, behind the new `wheel_every_notch` setting (default on), with tests in `settings-test.sh`. Confirmed by test the same day: with the delay at 0 the page zoom no longer moves. Option 3 (upstream report) still to file.
+Filed 2026-10-23 from the user's own observation (desktop, Razer DeathAdder Essential). Status: fixed 2026-10-23, released in 1.2.0 with fix option 1: the plugin sets `binds:scroll_event_delay = 0` whenever a wheel chord is bound, behind the new `wheel_every_notch` setting (default on), with tests in `settings-test.sh`. Confirmed by test the same day: with the delay at 0 the page zoom no longer moves. Option 3 (upstream report) still to file.
 
 ## Symptom
 

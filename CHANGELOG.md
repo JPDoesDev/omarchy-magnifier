@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-20
+
 ### Added
 
 - The lock screen comes up at 100% and the zoom comes back after the unlock (#6). The shell half of the plugin watches Hyprland for a session lock (Hyprland 0.56 has no lock event and Omarchy no lock hook) and calls the new `OmarchyMagnifier.screen_lock(true | false)`; frozen views leave the screen shader while locked, colour inversion stays. New settings `lock_screen_reset` (default `true`) and `restore_after_unlock` (default `true`). `omarchy-shell magnifier lock` prints the state of the watch.
@@ -64,6 +66,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `omarchy-magnifier` command line tool: `zoom in|out|toggle|preset|off|set <n>|status`, `jump next|prev`, `lock on|off|toggle|status`, `unfreeze`.
 - `install.sh` that adds the settings block and the `dofile` line to `hyprland.lua`, links the command line tool into `~/.local/bin` and reloads Hyprland; `install.sh --uninstall` reverses it.
 
-[Unreleased]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/JPDoesDev/omarchy-magnifier/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JPDoesDev/omarchy-magnifier/releases/tag/v1.0.0

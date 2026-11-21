@@ -2,9 +2,9 @@
 
 GitHub issue: https://github.com/JPDoesDev/omarchy-magnifier/issues/1
 
-Closed 2026-11-20: cause found and fixed (see "Cause" below), issue closed. The fix is on `main` and goes out with the next release. Open a new report if a banner shows up with the fix in place.
+Closed 2026-11-20: cause found and fixed (see "Cause" below), issue closed. Released in 1.2.0. Open a new report if a banner shows up with the fix in place.
 
-Filed 2026-10-23 on the laptop (wy02-yoga, Hyprland 0.56.2, Omarchy). Status: fixed 2026-11-20 (commit 8f51a94), unreleased.
+Filed 2026-10-23 on the laptop (wy02-yoga, Hyprland 0.56.2, Omarchy). Status: fixed 2026-11-20 (commit 8f51a94), released in 1.2.0.
 
 ## Symptom
 
@@ -46,7 +46,7 @@ banner from the space it reserves at the top of the monitor (`reserved` in
 | the plugin's current shader with a frozen view (no `time`, `debug:damage_tracking` 0) | 0 | empty |
 | the same after a second reload | 0 | empty |
 
-The fix (8f51a94, 2026-11-20, unreleased) takes `time` out of the generated
+The fix (8f51a94, 2026-11-20, released in 1.2.0) takes `time` out of the generated
 shader and switches `debug:damage_tracking` off while a view is frozen.
 Candidate 1 below (watchdog timeouts, reports 002 and 003) was fixed on
 2026-10-23 as well; no such banner was ever captured.
